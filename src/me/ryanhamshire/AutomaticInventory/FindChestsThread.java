@@ -1,12 +1,6 @@
 package me.ryanhamshire.AutomaticInventory;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChunkSnapshot;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -17,6 +11,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
+
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class FindChestsThread extends Thread
 {
@@ -58,18 +55,18 @@ public class FindChestsThread extends Thread
         while(!leftToVisit.isEmpty())
         {
             Vector current = leftToVisit.remove();
-            
-            int typeID = this.getTypeID(current);
-            if(isChestID(typeID))
+
+            Material type = this.getType(current);
+            if (type == Material.TRAPPED_CHEST || type == Material.ENDER_CHEST || type.name().contains("SHULKER"))
             {
-                int overTypeID = this.getTypeID(new Vector(current.getBlockX(), current.getBlockY() + 1, current.getBlockZ()));
-                if(!AutomaticInventory.preventsChestOpen(overTypeID))
+                Material overType = this.getType(new Vector(current.getBlockX(), current.getBlockY() + 1, current.getBlockZ()));
+                if (!AutomaticInventory.preventsChestOpen(overType))
                 {
                     chestLocations.add(this.makeLocation(current));
                 }
             }
-            
-            if(this.isPassableID(typeID))
+
+            if (this.isPassableID(type))
             {
                 Vector [] adjacents = new Vector [] {
                     new Vector(current.getBlockX() + 1, current.getBlockY(), current.getBlockZ()),
@@ -104,16 +101,15 @@ public class FindChestsThread extends Thread
             this.smallestChunk.getZ() * 16 + location.getBlockZ());
     }
 
-    @SuppressWarnings("deprecation")
-    private int getTypeID(Vector location)
+    private Material getType(Vector location)
     {
-        if(this.outOfBounds(location)) return  -1;
+        if (this.outOfBounds(location)) return null;
         int chunkx = location.getBlockX() / 16;
         int chunkz = location.getBlockZ() / 16;
         ChunkSnapshot chunk = this.snapshots[chunkx][chunkz];
         int x = location.getBlockX() % 16;
         int z = location.getBlockZ() % 16;
-        return chunk.getBlockTypeId(x, location.getBlockY(), z);
+        return chunk.getBlockType(x, location.getBlockY(), z);
     }
 
     private boolean alreadySeen(Vector location)
@@ -137,25 +133,18 @@ public class FindChestsThread extends Thread
         if(location.getBlockX() >= 48) return true;
         if(location.getBlockX() < 0) return true;
         if(location.getBlockZ() >= 48) return true;
-        if(location.getBlockZ() < 0) return true;
-        return false;
+        return location.getBlockZ() < 0;
     }
 
-    private boolean isChestID(int id)
+    private boolean isPassableID(Material material)
     {
-        return (id == 54 || id == 146);
-    }
-    
-    private boolean isPassableID(int id)
-    {
-        switch(id)
-        {
-            case 0:     //air
-            case 54:    //chest
-            case 146:   //trapped chest
-            case 154:   //hopper
-            case 68:    //wall sign
-            case 389:   //item frame
+        switch (material) {
+            case AIR:
+            case CHEST:
+            case TRAPPED_CHEST:
+            case HOPPER:
+            case SIGN:
+            case WALL_SIGN:
                 return true;
             default:
                 return false;

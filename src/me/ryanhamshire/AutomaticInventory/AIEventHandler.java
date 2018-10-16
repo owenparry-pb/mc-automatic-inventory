@@ -2,17 +2,10 @@
 
 package me.ryanhamshire.AutomaticInventory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.Chest;
-import org.bukkit.block.DoubleChest;
+import org.bukkit.block.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -27,19 +20,14 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemBreakEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.event.player.*;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.projectiles.ProjectileSource;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class AIEventHandler implements Listener 
 {
@@ -116,8 +104,8 @@ public class AIEventHandler implements Listener
         {
             return;
         }
-        
-        if(AutomaticInventory.instance.config_noAutoRefillIDs.contains(stack.getTypeId())) return;
+
+        if (AutomaticInventory.instance.config_noAutoRefillIDs.contains(stack.getType())) return;
 		if(!dataValueMatters || stack.getAmount() == 1)
 		{
 		    PlayerInventory inventory = player.getInventory();
@@ -253,11 +241,8 @@ public class AIEventHandler implements Listener
         
         Block clickedBlock = event.getBlock();
         if(clickedBlock == null) return;
-        Material clickedMaterial = clickedBlock.getType();
+        if (!(clickedBlock.getState() instanceof Container)) return;
         
-        if(clickedMaterial != Material.CHEST && clickedMaterial != Material.TRAPPED_CHEST) return;
-        
-        @SuppressWarnings("deprecation")
         PlayerInteractEvent fakeEvent = AutomaticInventory.instance.new FakePlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, player.getItemInHand(), clickedBlock, BlockFace.EAST);
         Bukkit.getServer().getPluginManager().callEvent(fakeEvent);
         if(fakeEvent.isCancelled()) return;
@@ -267,9 +252,8 @@ public class AIEventHandler implements Listener
         PlayerInventory playerInventory = player.getInventory();
         
         event.setCancelled(true);
-        
-        @SuppressWarnings("deprecation")
-        int aboveBlockID = clickedBlock.getRelative(BlockFace.UP).getTypeId();
+
+        Material aboveBlockID = clickedBlock.getRelative(BlockFace.UP).getType();
         if(AutomaticInventory.preventsChestOpen(aboveBlockID))
         {
             AutomaticInventory.sendMessage(player, TextMode.Err, Messages.ChestLidBlocked);
@@ -399,9 +383,7 @@ public class AIEventHandler implements Listener
         if(name != null && name.contains("*")) return false;
         
         InventoryHolder holder = inventory.getHolder();
-        if(holder == null || !(holder instanceof Chest || holder instanceof DoubleChest || holder instanceof StorageMinecart)) return false;
-        
-        return true;
+        return holder != null && (holder instanceof Chest || holder instanceof DoubleChest || holder instanceof StorageMinecart);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -490,7 +472,7 @@ class InventorySorter implements Runnable
                     {
                         stacks.remove(i);
                         i--;
-                    };
+                    }
                 }
             }
         }
@@ -515,8 +497,8 @@ class InventorySorter implements Runnable
         {
             int result = new Integer(b.getMaxStackSize()).compareTo(a.getMaxStackSize());
             if(result != 0) return result;
-            
-            result = new Integer(b.getTypeId()).compareTo(a.getTypeId());
+
+            result = b.getType().compareTo(a.getType());
             if(result != 0) return result;
             
             result = new Byte(b.getData().getData()).compareTo(a.getData().getData());

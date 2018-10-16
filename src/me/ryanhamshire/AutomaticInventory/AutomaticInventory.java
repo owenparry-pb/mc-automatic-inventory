@@ -1,20 +1,8 @@
 //Copyright 2015 Ryan Hamshire
 
 package me.ryanhamshire.AutomaticInventory;
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.ChunkSnapshot;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
@@ -30,6 +18,11 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.Logger;
+
 public class AutomaticInventory extends JavaPlugin
 {
 	//for convenience, a reference to the instance of this plugin
@@ -37,9 +30,9 @@ public class AutomaticInventory extends JavaPlugin
 	
 	//for logging to the console and log file
 	private static Logger log = Logger.getLogger("Minecraft");
-	
-	Set<Integer> config_noAutoRefillIDs = new HashSet<Integer>();
-    Set<Integer> config_noAutoDepositIDs = new HashSet<Integer>();
+
+    Set<Material> config_noAutoRefillIDs = new HashSet<>();
+    Set<Material> config_noAutoDepositIDs = new HashSet<>();
 		
 	//this handles data storage, like player and region data
 	public DataStore dataStore;
@@ -66,7 +59,7 @@ public class AutomaticInventory extends JavaPlugin
         List<String> noAutoRefillIDs_string = config.getStringList("Auto Refill.Excluded Items");
         if(noAutoRefillIDs_string.size() == 0)
         {
-            noAutoRefillIDs_string.add("0");
+            noAutoRefillIDs_string.add("AIR");
             noAutoRefillIDs_string.add("373");
         }
         
@@ -74,10 +67,9 @@ public class AutomaticInventory extends JavaPlugin
         {
             try
             {
-                int id = Integer.parseInt(idString);
-                this.config_noAutoRefillIDs.add(id);
+                this.config_noAutoRefillIDs.add(Material.valueOf(idString.toUpperCase()));
+            } catch (Exception e) {
             }
-            catch(NumberFormatException e){ }
         }
         
         outConfig.set("Auto Refill.Excluded Items", noAutoRefillIDs_string);
@@ -95,10 +87,9 @@ public class AutomaticInventory extends JavaPlugin
         {
             try
             {
-                int id = Integer.parseInt(idString);
-                this.config_noAutoDepositIDs.add(id);
+                this.config_noAutoDepositIDs.add(Material.valueOf(idString.toUpperCase()));
+            } catch (Exception e) {
             }
-            catch(NumberFormatException e){ }
         }
         
         outConfig.set("Auto Deposit.Excluded Items", noAutoDepositIDs_string);
@@ -356,8 +347,8 @@ public class AutomaticInventory extends JavaPlugin
         {
             ItemStack sourceStack = source.getItem(i);
             if(sourceStack == null) continue;
-            
-            if(AutomaticInventory.instance.config_noAutoDepositIDs.contains(sourceStack.getTypeId())) continue;
+
+            if (AutomaticInventory.instance.config_noAutoDepositIDs.contains(sourceStack.getType())) continue;
             
             String signature = getSignature(sourceStack);
             int sourceStackSize = sourceStack.getAmount();
@@ -398,14 +389,10 @@ public class AutomaticInventory extends JavaPlugin
     @SuppressWarnings("deprecation")
     private static String getSignature(ItemStack stack)
     {
-        int sourceID = stack.getTypeId();
-        String signature = String.valueOf(sourceID);
-        boolean dataValueMatters = stack.getMaxStackSize() > 1;
-        if(dataValueMatters)
-        {
+        String signature = stack.getType().name();
+        if (stack.getMaxStackSize() > 1) {
             signature += "." + String.valueOf(stack.getData().getData());
         }
-        
         return signature;
     }
     
@@ -417,34 +404,8 @@ public class AutomaticInventory extends JavaPlugin
         }
     }
 
-    static boolean preventsChestOpen(int aboveBlockID)
+    static boolean preventsChestOpen(Material aboveBlockID)
     {
-        switch(aboveBlockID)
-        {
-            case 0:     //air
-            case 54:    //chest
-            case 146:   //trapped chest
-            case 154:   //hopper
-            case 68:    //wall sign
-            case 389:   //item frame
-            case 44:    //slabs
-            case 126:   //more slabs
-            case 53:    //so many stairs...
-            case 67:
-            case 108:
-            case 109:
-            case 114:
-            case 128:
-            case 134:
-            case 135:
-            case 136:
-            case 156:
-            case 163:
-            case 164:
-            case 180:
-                return false;
-            default:
-                return true;
-        }
+        return aboveBlockID != Material.CHEST && aboveBlockID.isSolid();
     }
 }
