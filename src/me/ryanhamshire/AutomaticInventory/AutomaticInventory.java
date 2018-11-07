@@ -109,10 +109,8 @@ public class AutomaticInventory extends JavaPlugin
 		
 		AIEventHandler aIEventHandler = new AIEventHandler();
 		pluginManager.registerEvents(aIEventHandler, this);
-		
-		@SuppressWarnings("unchecked")
-        Collection<Player> players = (Collection<Player>)this.getServer().getOnlinePlayers();
-		for(Player player : players)
+
+		for(Player player : this.getServer().getOnlinePlayers())
 		{
 		    PlayerData.Preload(player);
 		}
@@ -240,9 +238,7 @@ public class AutomaticInventory extends JavaPlugin
 
     public void onDisable()
 	{
-        @SuppressWarnings("unchecked")
-        Collection<Player> players = (Collection<Player>)this.getServer().getOnlinePlayers();
-        for(Player player : players)
+        for(Player player : this.getServer().getOnlinePlayers())
         {
             PlayerData data = PlayerData.FromPlayer(player);
             data.saveChanges();
@@ -277,7 +273,6 @@ public class AutomaticInventory extends JavaPlugin
         return hasPermission;
     }
     
-    @SuppressWarnings("unused")
     private static void sendMessage(Player player, String message)
 	{
 		if(player != null)
@@ -328,7 +323,6 @@ public class AutomaticInventory extends JavaPlugin
         }
     }
 
-    @SuppressWarnings("deprecation")
     static DepositRecord depositMatching(PlayerInventory source, Inventory destination, boolean depositHotbar)
     {
         HashSet<String> eligibleSignatures = new HashSet<String>();
@@ -386,7 +380,6 @@ public class AutomaticInventory extends JavaPlugin
         return deposits;
     }
     
-    @SuppressWarnings("deprecation")
     private static String getSignature(ItemStack stack)
     {
         String signature = stack.getType().name();
