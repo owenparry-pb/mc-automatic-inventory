@@ -37,7 +37,7 @@
             <resource>
                 <!-- Use plugin.yml in root directory-->
                 <!-- This can also automatically update plugin.yml version from pom, if you use ${project.version} as version number-->
-                <directory>${basedir}</directory>
+                <directory>${basedir}/resources</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>plugin.yml</include>
