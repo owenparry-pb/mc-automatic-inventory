@@ -58,15 +58,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 # ZEINTELLIJ
-.idea/workspace.xml
-.idea/dictionaries
-.idea/misc.xml
-.idea/libraries
-.idea/uiDesigner.xml
-.idea/kotlinc.xml
-.idea/modules.xml
-.idea/usage.statistics.xml
-.idea/checkstyle-idea.xml
+.idea
 **/*.iml
 out/
 target/
