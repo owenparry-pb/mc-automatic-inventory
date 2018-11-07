@@ -377,13 +377,17 @@ public class AIEventHandler implements Listener
         if(inventory == null) return false;
         
         InventoryType inventoryType = inventory.getType();
-        if(inventoryType != InventoryType.CHEST && inventoryType != InventoryType.ENDER_CHEST) return false;
+        if(inventoryType != InventoryType.CHEST
+                && inventoryType != InventoryType.ENDER_CHEST
+                && inventoryType != InventoryType.SHULKER_BOX) return false;
         
         String name = inventory.getName();
         if(name != null && name.contains("*")) return false;
         
         InventoryHolder holder = inventory.getHolder();
-        return holder != null && (holder instanceof Chest || holder instanceof DoubleChest || holder instanceof StorageMinecart);
+        return holder instanceof Container
+                || holder instanceof DoubleChest
+                || holder instanceof StorageMinecart;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
