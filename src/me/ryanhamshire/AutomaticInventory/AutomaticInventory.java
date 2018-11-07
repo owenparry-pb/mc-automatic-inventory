@@ -2,6 +2,7 @@
 
 package me.ryanhamshire.AutomaticInventory;
 
+import org.bstats.bukkit.Metrics;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -29,7 +30,7 @@ public class AutomaticInventory extends JavaPlugin
 	public static AutomaticInventory instance;
 	
 	//for logging to the console and log file
-	private static Logger log = Logger.getLogger("Minecraft");
+	private static Logger log;
 
     Set<Material> config_noAutoRefillIDs = new HashSet<>();
     Set<Material> config_noAutoDepositIDs = new HashSet<>();
@@ -39,11 +40,12 @@ public class AutomaticInventory extends JavaPlugin
 	
 	public synchronized static void AddLogEntry(String entry)
 	{
-		log.info("AutomaticInventory: " + entry);
+		log.info(entry);
 	}
 	
 	public void onEnable()
-	{ 		
+	{
+	    log = getLogger();
 		AddLogEntry("AutomaticInventory enabled.");		
 		
 		instance = this;
@@ -114,6 +116,13 @@ public class AutomaticInventory extends JavaPlugin
 		{
 		    PlayerData.Preload(player);
 		}
+
+		try
+        {
+            new Metrics(this);
+        }
+        catch (Throwable ignored){}
+
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
