@@ -32,8 +32,8 @@ public class AutomaticInventory extends JavaPlugin
 	//for logging to the console and log file
 	private static Logger log;
 
-    Set<Material> config_noAutoRefillIDs = new HashSet<>();
-    Set<Material> config_noAutoDepositIDs = new HashSet<>();
+    Set<Material> config_noAutoRefill = new HashSet<>();
+    Set<Material> config_noAutoDeposit = new HashSet<>();
 		
 	//this handles data storage, like player and region data
 	public DataStore dataStore;
@@ -62,16 +62,16 @@ public class AutomaticInventory extends JavaPlugin
         if(noAutoRefillIDs_string.size() == 0)
         {
             noAutoRefillIDs_string.add("AIR");
-            noAutoRefillIDs_string.add("373");
+            noAutoRefillIDs_string.add("POTION");
         }
         
         for(String idString : noAutoRefillIDs_string)
         {
-            try
-            {
-                this.config_noAutoRefillIDs.add(Material.valueOf(idString.toUpperCase()));
-            } catch (Exception e) {
-            }
+            Material material = Material.matchMaterial(idString.toUpperCase());
+            if (material == null)
+                getLogger().warning(idString + " is not a valid material");
+            else
+                this.config_noAutoRefill.add(material);
         }
         
         outConfig.set("Auto Refill.Excluded Items", noAutoRefillIDs_string);
@@ -79,19 +79,19 @@ public class AutomaticInventory extends JavaPlugin
         List<String> noAutoDepositIDs_string = config.getStringList("Auto Deposit.Excluded Items");
         if(noAutoDepositIDs_string.size() == 0)
         {
-            noAutoDepositIDs_string.add("0");
-            noAutoDepositIDs_string.add("262");
-            noAutoDepositIDs_string.add("439");
-            noAutoDepositIDs_string.add("440");
+            noAutoDepositIDs_string.add("AIR");
+            noAutoDepositIDs_string.add("ARROW");
+            noAutoDepositIDs_string.add("SPECTRAL_ARROW");
+            noAutoDepositIDs_string.add("TIPPED_ARROW");
         }
         
         for(String idString : noAutoDepositIDs_string)
         {
-            try
-            {
-                this.config_noAutoDepositIDs.add(Material.valueOf(idString.toUpperCase()));
-            } catch (Exception e) {
-            }
+            Material material = Material.matchMaterial(idString.toUpperCase());
+            if (material == null)
+                getLogger().warning(idString + " is not a valid material");
+            else
+                this.config_noAutoDeposit.add(material);
         }
         
         outConfig.set("Auto Deposit.Excluded Items", noAutoDepositIDs_string);
@@ -351,7 +351,7 @@ public class AutomaticInventory extends JavaPlugin
             ItemStack sourceStack = source.getItem(i);
             if(sourceStack == null) continue;
 
-            if (AutomaticInventory.instance.config_noAutoDepositIDs.contains(sourceStack.getType())) continue;
+            if (AutomaticInventory.instance.config_noAutoDeposit.contains(sourceStack.getType())) continue;
             
             String signature = getSignature(sourceStack);
             int sourceStackSize = sourceStack.getAmount();

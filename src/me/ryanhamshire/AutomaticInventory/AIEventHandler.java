@@ -75,13 +75,12 @@ public class AIEventHandler implements Listener
     public void onProjectileLaunch(ProjectileLaunchEvent event)
     {
         ProjectileSource source = event.getEntity().getShooter();
-        if(source == null || !(source instanceof Player)) return;
+        if(!(source instanceof Player)) return;
         
         Player player = (Player)source;
         tryRefillStackInHand(player, EquipmentSlot.HAND, false);
     }
 
-    @SuppressWarnings("deprecation")
     private void tryRefillStackInHand(Player player, EquipmentSlot slot, boolean dataValueMatters)
     {
         if(slot == null) return;
@@ -105,7 +104,7 @@ public class AIEventHandler implements Listener
             return;
         }
 
-        if (AutomaticInventory.instance.config_noAutoRefillIDs.contains(stack.getType())) return;
+        if (AutomaticInventory.instance.config_noAutoRefill.contains(stack.getType())) return;
 		if(!dataValueMatters || stack.getAmount() == 1)
 		{
 		    PlayerInventory inventory = player.getInventory();
@@ -243,7 +242,7 @@ public class AIEventHandler implements Listener
         if(clickedBlock == null) return;
         if (!(clickedBlock.getState() instanceof Container)) return;
         
-        PlayerInteractEvent fakeEvent = AutomaticInventory.instance.new FakePlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, player.getItemInHand(), clickedBlock, BlockFace.EAST);
+        PlayerInteractEvent fakeEvent = AutomaticInventory.instance.new FakePlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, player.getInventory().getItemInMainHand(), clickedBlock, BlockFace.EAST);
         Bukkit.getServer().getPluginManager().callEvent(fakeEvent);
         if(fakeEvent.isCancelled()) return;
         
