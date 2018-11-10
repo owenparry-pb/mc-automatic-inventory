@@ -57,7 +57,7 @@ public class FindChestsThread extends Thread
             Vector current = leftToVisit.remove();
 
             Material type = this.getType(current);
-            if (type == Material.TRAPPED_CHEST || type == Material.ENDER_CHEST || type.name().contains("SHULKER"))
+            if (isChest(type))
             {
                 Material overType = this.getType(new Vector(current.getBlockX(), current.getBlockY() + 1, current.getBlockZ()));
                 if (!AutomaticInventory.preventsChestOpen(overType))
@@ -66,7 +66,7 @@ public class FindChestsThread extends Thread
                 }
             }
 
-            if (this.isPassableID(type))
+            if (this.isPassable(type))
             {
                 Vector [] adjacents = new Vector [] {
                     new Vector(current.getBlockX() + 1, current.getBlockY(), current.getBlockZ()),
@@ -136,8 +136,23 @@ public class FindChestsThread extends Thread
         return location.getBlockZ() < 0;
     }
 
-    private boolean isPassableID(Material material)
+    private boolean isChest(Material material)
     {
+        if (material == null)
+            return false;
+        switch (material)
+        {
+            case CHEST:
+            case TRAPPED_CHEST:
+                return true;
+        }
+        return MaterialColorTag.SHULKER_BOX.isTagged(material);
+    }
+
+    private boolean isPassable(Material material)
+    {
+        if (material == null)
+            return false;
         switch (material) {
             case AIR:
             case CHEST:
