@@ -45,7 +45,7 @@ public class AIEventHandler implements Listener
         return null;
     }
     
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onToolBreak(PlayerItemBreakEvent event)
 	{
 	    Player player = event.getPlayer();
@@ -139,11 +139,10 @@ public class AIEventHandler implements Listener
 	    
 	    return false;
     }
-	
-	@SuppressWarnings("deprecation")
+
     private static boolean itemsAreSimilar(ItemStack a, ItemStack b, boolean dataValueMatters)
     {
-        if(a.getType() == b.getType() && (!dataValueMatters || a.getData().getData() == b.getData().getData()))
+        if(a.getType() == b.getType())
         {
             if(a.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS) || a.containsEnchantment(Enchantment.SILK_TOUCH) || a.containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) return false;
             
