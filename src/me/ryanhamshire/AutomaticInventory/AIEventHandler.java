@@ -147,6 +147,7 @@ public class AIEventHandler implements Listener
             if(a.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS) || a.containsEnchantment(Enchantment.SILK_TOUCH) || a.containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) return false;
             
             if(a.hasItemMeta() != b.hasItemMeta()) return false;
+            System.out.println("AI " + "both have metadata");
             
             //compare metadata
             if(a.hasItemMeta())
@@ -209,6 +210,7 @@ public class AIEventHandler implements Listener
                         bestMatchStack = itemInSlot;
                         bestMatchSlot = i;
                         bestMatchStackSize = stackSize;
+                        System.out.println("AI " + itemInSlot + " " + i + " " + stackSize);
                     }
                     
                     if(bestMatchStackSize == 1) break;
