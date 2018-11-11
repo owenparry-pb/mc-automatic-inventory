@@ -112,6 +112,7 @@ public class AIEventHandler implements Listener
 	            AutomaticInventory.instance,
 	            new AutoRefillHotBarTask(player, inventory, slotIndex, stack.clone(), dataValueMatters),
 	            2L);
+            System.out.println(" AI preclone " + stack.toString());
 		}
     }
 	
@@ -201,6 +202,7 @@ public class AIEventHandler implements Listener
             ItemStack currentStack = this.targetInventory.getItem(this.slotToRefill);
             if(currentStack != null) return;
             System.out.println("AI " + "running task still");
+            System.out.println(" AI task " + this.stackToReplace.toString());
             
             ItemStack bestMatchStack = null;
             int bestMatchSlot = -1;
