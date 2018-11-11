@@ -153,6 +153,8 @@ public class AIEventHandler implements Listener
             if(a.hasItemMeta())
             {
                 if(!b.hasItemMeta()) return false;
+
+                System.out.println("AI " + "indeed both have metadata");
                 
                 ItemMeta meta1 = a.getItemMeta();
                 ItemMeta meta2 = b.getItemMeta();
@@ -160,8 +162,9 @@ public class AIEventHandler implements Listener
                 //compare names
                 if(meta1.hasDisplayName())
                 {
+                    System.out.println("AI " + "meta1 has name");
                     if(!meta2.hasDisplayName()) return false;
-                    
+                    System.out.println("AI displayname match " + meta1.getDisplayName().equals(meta2.getDisplayName()));
                     return meta1.getDisplayName().equals(meta2.getDisplayName());
                 }
             }
