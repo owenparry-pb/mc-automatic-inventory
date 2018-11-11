@@ -205,12 +205,13 @@ public class AIEventHandler implements Listener
                 if(itemsAreSimilar(itemInSlot, this.stackToReplace, dataValueMatters))
                 {
                     int stackSize = itemInSlot.getAmount();
+                    System.out.println("AI " + itemInSlot + " " + i + " " + stackSize);
                     if(stackSize < bestMatchStackSize)
                     {
                         bestMatchStack = itemInSlot;
                         bestMatchSlot = i;
                         bestMatchStackSize = stackSize;
-                        System.out.println("AI " + itemInSlot + " " + i + " " + stackSize);
+                        System.out.println("AI yes " + itemInSlot + " " + i + " " + stackSize);
                     }
                     
                     if(bestMatchStackSize == 1) break;
