@@ -197,8 +197,10 @@ public class AIEventHandler implements Listener
         @Override
         public void run()
         {
+            System.out.println("AI " + "running task");
             ItemStack currentStack = this.targetInventory.getItem(this.slotToRefill);
             if(currentStack != null) return;
+            System.out.println("AI " + "running task still");
             
             ItemStack bestMatchStack = null;
             int bestMatchSlot = -1;
