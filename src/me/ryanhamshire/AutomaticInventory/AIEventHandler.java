@@ -146,9 +146,10 @@ public class AIEventHandler implements Listener
         if(a.getType() == b.getType())
         {
             if(a.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS) || a.containsEnchantment(Enchantment.SILK_TOUCH) || a.containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) return false;
-            
+
+            System.out.println("AI " + "a metadata: " + a.hasItemMeta() + " b: " + b.hasItemMeta());
+
             if(a.hasItemMeta() != b.hasItemMeta()) return false;
-            System.out.println("AI " + "both have metadata");
             
             //compare metadata
             if(a.hasItemMeta())
