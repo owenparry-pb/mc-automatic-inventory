@@ -152,6 +152,8 @@ public class AIEventHandler implements Listener
             //compare metadata
             if(a.hasItemMeta())
             {
+                System.out.println("AI " + "a has metadata");
+
                 if(!b.hasItemMeta()) return false;
 
                 System.out.println("AI " + "indeed both have metadata");
