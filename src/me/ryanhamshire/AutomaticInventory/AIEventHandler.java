@@ -112,7 +112,6 @@ public class AIEventHandler implements Listener
 	            AutomaticInventory.instance,
 	            new AutoRefillHotBarTask(player, inventory, slotIndex, stack.clone(), dataValueMatters),
 	            2L);
-            System.out.println(" AI preclone " + stack.toString());
 		}
     }
 	
@@ -147,32 +146,25 @@ public class AIEventHandler implements Listener
         {
             if(a.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS) || a.containsEnchantment(Enchantment.SILK_TOUCH) || a.containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) return false;
 
-            System.out.println("AI " + "a metadata: " + a.hasItemMeta() + " b: " + b.hasItemMeta());
+//            //a will _not_ have itemMeta if it is a vanilla tool with no damage.
+//            if(a.hasItemMeta() != b.hasItemMeta()) return false;
+//
+//            //compare metadata
+//            if(a.hasItemMeta())
+//            {
+//                if(!b.hasItemMeta()) return false;
+//
+//                ItemMeta meta1 = a.getItemMeta();
+//                ItemMeta meta2 = b.getItemMeta();
+//
+//                //compare names
+//                if(meta1.hasDisplayName())
+//                {
+//                    if(!meta2.hasDisplayName()) return false;
+//                    return meta1.getDisplayName().equals(meta2.getDisplayName());
+//                }
+//            }
 
-            if(a.hasItemMeta() != b.hasItemMeta()) return false;
-            
-            //compare metadata
-            if(a.hasItemMeta())
-            {
-                System.out.println("AI " + "a has metadata");
-
-                if(!b.hasItemMeta()) return false;
-
-                System.out.println("AI " + "indeed both have metadata");
-                
-                ItemMeta meta1 = a.getItemMeta();
-                ItemMeta meta2 = b.getItemMeta();
-                
-                //compare names
-                if(meta1.hasDisplayName())
-                {
-                    System.out.println("AI " + "meta1 has name");
-                    if(!meta2.hasDisplayName()) return false;
-                    System.out.println("AI displayname match " + meta1.getDisplayName().equals(meta2.getDisplayName()));
-                    return meta1.getDisplayName().equals(meta2.getDisplayName());
-                }
-            }
-            
             return true;
         }
 
@@ -199,12 +191,9 @@ public class AIEventHandler implements Listener
         @Override
         public void run()
         {
-            System.out.println("AI " + "running task");
             ItemStack currentStack = this.targetInventory.getItem(this.slotToRefill);
             if(currentStack != null) return;
-            System.out.println("AI " + "running task still");
-            System.out.println(" AI task " + this.stackToReplace.toString());
-            
+
             ItemStack bestMatchStack = null;
             int bestMatchSlot = -1;
             int bestMatchStackSize = Integer.MAX_VALUE;
@@ -215,13 +204,11 @@ public class AIEventHandler implements Listener
                 if(itemsAreSimilar(itemInSlot, this.stackToReplace, dataValueMatters))
                 {
                     int stackSize = itemInSlot.getAmount();
-                    System.out.println("AI " + itemInSlot + " " + i + " " + stackSize);
                     if(stackSize < bestMatchStackSize)
                     {
                         bestMatchStack = itemInSlot;
                         bestMatchSlot = i;
                         bestMatchStackSize = stackSize;
-                        System.out.println("AI yes " + itemInSlot + " " + i + " " + stackSize);
                     }
                     
                     if(bestMatchStackSize == 1) break;
