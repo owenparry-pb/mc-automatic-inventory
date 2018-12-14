@@ -15,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -61,6 +62,15 @@ public class AIEventHandler implements Listener
 		Player player = event.getPlayer();
 		tryRefillStackInHand(player, event.getHand(), true);
 	}
+
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+	public void onFertilize(BlockFertilizeEvent event)
+    {
+        Player player = event.getPlayer();
+        PlayerInventory inventory = player.getInventory();
+        EquipmentSlot slot = this.getSlotWithItemStack(inventory, new ItemStack(Material.BONE_MEAL));
+        tryRefillStackInHand(player, slot, true);
+    }
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onConsumeItem(PlayerItemConsumeEvent event)
