@@ -405,7 +405,7 @@ public class AutomaticInventory extends JavaPlugin
             if (potionData.isExtended()) signature += ".extended";
             if (potionData.isUpgraded()) signature += ".upgraded";
         }
-        
+
         return signature;
     }
     
