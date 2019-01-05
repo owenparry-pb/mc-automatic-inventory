@@ -156,7 +156,7 @@ public class AIEventHandler implements Listener
         {
             if(a.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS) || a.containsEnchantment(Enchantment.SILK_TOUCH) || a.containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) return false;
 
-//            //a will _not_ have itemMeta if it is a vanilla tool with no damage.
+            //a will _not_ have itemMeta if it is a vanilla tool with no damage.
 //            if(a.hasItemMeta() != b.hasItemMeta()) return false;
 //
 //            //compare metadata
