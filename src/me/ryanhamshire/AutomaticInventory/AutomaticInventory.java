@@ -16,8 +16,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionData;
 
 import java.io.File;
 import java.io.IOException;
@@ -395,6 +397,15 @@ public class AutomaticInventory extends JavaPlugin
         if (stack.getMaxStackSize() > 1) {
             signature += "." + String.valueOf(stack.getData().getData());
         }
+
+        //differentiate potion types. Credit to pugabyte: https://github.com/Pugabyte/AutomaticInventory/commit/01bbdbfa0ea1bc7dc397fc8a8ff625f3f22e1ed6
+        if (stack.getType().toString().toLowerCase().contains("potion")) {
+            PotionData potionData = ((PotionMeta) stack.getItemMeta()).getBasePotionData();
+            signature += "." + String.valueOf(potionData.getType().getEffectType().getName());
+            if (potionData.isExtended()) signature += ".extended";
+            if (potionData.isUpgraded()) signature += ".upgraded";
+        }
+        
         return signature;
     }
     
