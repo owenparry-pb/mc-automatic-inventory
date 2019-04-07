@@ -398,10 +398,11 @@ public class AutomaticInventory extends JavaPlugin
             signature += "." + String.valueOf(stack.getData().getData());
         }
 
-        //differentiate potion types. Credit to pugabyte: https://github.com/Pugabyte/AutomaticInventory/commit/01bbdbfa0ea1bc7dc397fc8a8ff625f3f22e1ed6
+        //differentiate potion types. Original credit to pugabyte: https://github.com/Pugabyte/AutomaticInventory/commit/01bbdbfa0ea1bc7dc397fc8a8ff625f3f22e1ed6
+        //Modified to use PotionType instead of PotionEffectType in signature
         if (stack.getType().toString().toLowerCase().contains("potion")) {
             PotionData potionData = ((PotionMeta) stack.getItemMeta()).getBasePotionData();
-            signature += "." + String.valueOf(potionData.getType().getEffectType().getName());
+            signature += "." + potionData.getType().toString();
             if (potionData.isExtended()) signature += ".extended";
             if (potionData.isUpgraded()) signature += ".upgraded";
         }
