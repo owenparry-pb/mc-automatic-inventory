@@ -418,8 +418,13 @@ public class AutomaticInventory extends JavaPlugin
         }
     }
 
+    /**
+     * Function to check if a chest would open based only on its block above
+     * @param aboveBlockID the block above the ctest
+     * @return whether or not the chest would not open
+     */
     static boolean preventsChestOpen(Material aboveBlockID)
     {
-        return aboveBlockID != Material.CHEST && aboveBlockID.isSolid();
+        return aboveBlockID.isOccluding();
     }
 }
