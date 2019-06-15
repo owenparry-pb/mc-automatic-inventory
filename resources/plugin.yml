@@ -2,7 +2,7 @@ name: AutomaticInventory
 main: me.ryanhamshire.AutomaticInventory.AutomaticInventory
 authors: [Big_Scary, RoboMWM, AllTheCode]
 version: ${project.version}
-api-version: 1.13
+api-version: '1.14'
 commands:
    debugai:
       description: Debug command for AutomaticInventory.
