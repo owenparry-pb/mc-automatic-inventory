@@ -118,7 +118,7 @@ class PlayerData
     
     private boolean isDirty = false;
     
-    private boolean sortChests = true;
+    private boolean sortChests = AutomaticInventory.autosortEnabledByDefault;
     boolean isSortChests()
     {
         this.waitForLoadComplete();
@@ -130,7 +130,7 @@ class PlayerData
         this.sortChests = sortChests;
     }
 
-    private boolean sortInventory = true;
+    private boolean sortInventory = AutomaticInventory.autosortEnabledByDefault;
     
     boolean isSortInventory()
     {

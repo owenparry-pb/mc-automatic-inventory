@@ -36,6 +36,7 @@ public class AutomaticInventory extends JavaPlugin
 
     Set<Material> config_noAutoRefill = new HashSet<>();
     Set<Material> config_noAutoDeposit = new HashSet<>();
+    static boolean autosortEnabledByDefault = true;
 		
 	//this handles data storage, like player and region data
 	public DataStore dataStore;
@@ -97,6 +98,9 @@ public class AutomaticInventory extends JavaPlugin
         }
         
         outConfig.set("Auto Deposit.Excluded Items", noAutoDepositIDs_string);
+
+        autosortEnabledByDefault = config.getBoolean("autosortEnabledByDefault", true);
+        outConfig.set("autosortEnabledByDefault", autosortEnabledByDefault);
         
         try
         {
