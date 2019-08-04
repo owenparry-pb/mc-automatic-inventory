@@ -249,7 +249,7 @@ public class AIEventHandler implements Listener
         
         Block clickedBlock = event.getBlock();
         if(clickedBlock == null) return;
-        if (!(clickedBlock.getState() instanceof Container)) return;
+        if (!(clickedBlock.getState() instanceof Chest) && !(clickedBlock.getState() instanceof ShulkerBox)) return;
         
         PlayerInteractEvent fakeEvent = AutomaticInventory.instance.new FakePlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, player.getInventory().getItemInMainHand(), clickedBlock, BlockFace.EAST);
         Bukkit.getServer().getPluginManager().callEvent(fakeEvent);
@@ -392,7 +392,8 @@ public class AIEventHandler implements Listener
         if(name != null && name.contains("*")) return false;
         
         InventoryHolder holder = inventory.getHolder();
-        return holder instanceof Container
+        return holder instanceof Chest
+                || holder instanceof ShulkerBox
                 || holder instanceof DoubleChest
                 || holder instanceof StorageMinecart;
     }
