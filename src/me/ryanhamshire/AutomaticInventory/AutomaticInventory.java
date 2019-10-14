@@ -429,6 +429,8 @@ public class AutomaticInventory extends JavaPlugin
      */
     static boolean preventsChestOpen(Material aboveBlockID)
     {
+        if (aboveBlockID == null)
+            return false;
         return aboveBlockID.isOccluding();
     }
 }
