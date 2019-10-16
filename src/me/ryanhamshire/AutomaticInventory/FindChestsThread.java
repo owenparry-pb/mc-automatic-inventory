@@ -61,7 +61,7 @@ public class FindChestsThread extends Thread
             if (isChest(type))
             {
                 Material overType = this.getType(new Vector(current.getBlockX(), current.getBlockY() + 1, current.getBlockZ()));
-                if (!AutomaticInventory.preventsChestOpen(overType))
+                if (!AutomaticInventory.preventsChestOpen(type, overType))
                 {
                     chestLocations.add(this.makeLocation(current));
                 }
@@ -145,6 +145,7 @@ public class FindChestsThread extends Thread
         {
             case CHEST:
             case TRAPPED_CHEST:
+            case BARREL:
                 return true;
         }
         return MaterialColorTag.SHULKER_BOX.isTagged(material);

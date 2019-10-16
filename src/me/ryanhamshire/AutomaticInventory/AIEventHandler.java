@@ -249,7 +249,9 @@ public class AIEventHandler implements Listener
         
         Block clickedBlock = event.getBlock();
         if(clickedBlock == null) return;
-        if (!(clickedBlock.getState() instanceof Chest) && !(clickedBlock.getState() instanceof ShulkerBox)) return;
+        if (!(clickedBlock.getState() instanceof Chest)
+                && !(clickedBlock.getState() instanceof ShulkerBox)
+                && !(clickedBlock.getState() instanceof Barrel)) return;
         
         PlayerInteractEvent fakeEvent = AutomaticInventory.instance.new FakePlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, player.getInventory().getItemInMainHand(), clickedBlock, BlockFace.EAST);
         Bukkit.getServer().getPluginManager().callEvent(fakeEvent);
@@ -262,7 +264,7 @@ public class AIEventHandler implements Listener
         event.setCancelled(true);
 
         Material aboveBlockID = clickedBlock.getRelative(BlockFace.UP).getType();
-        if(AutomaticInventory.preventsChestOpen(aboveBlockID))
+        if(AutomaticInventory.preventsChestOpen(clickedBlock.getType(), aboveBlockID))
         {
             AutomaticInventory.sendMessage(player, TextMode.Err, Messages.ChestLidBlocked);
             return;

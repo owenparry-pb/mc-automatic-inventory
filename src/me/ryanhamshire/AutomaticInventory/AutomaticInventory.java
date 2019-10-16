@@ -427,8 +427,14 @@ public class AutomaticInventory extends JavaPlugin
      * @param aboveBlockID the block above the ctest
      * @return whether or not the chest would not open
      */
-    static boolean preventsChestOpen(Material aboveBlockID)
+    static boolean preventsChestOpen(Material container, Material aboveBlockID)
     {
+        switch (container)
+        {
+            case BARREL:
+                return false;
+        }
+
         if (aboveBlockID == null)
             return false;
         return aboveBlockID.isOccluding();
