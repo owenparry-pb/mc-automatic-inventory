@@ -34,11 +34,11 @@ public class AIEventHandler implements Listener
 {
     private EquipmentSlot getSlotWithItemStack(PlayerInventory inventory, ItemStack brokenItem)
     {
-        if(itemsAreSimilar(inventory.getItemInMainHand(), brokenItem, false))
+        if(itemsAreSimilar(inventory.getItemInMainHand(), brokenItem))
         {
             return EquipmentSlot.HAND;
         }
-        if(itemsAreSimilar(inventory.getItemInOffHand(), brokenItem, false))
+        if(itemsAreSimilar(inventory.getItemInOffHand(), brokenItem))
         {
             return EquipmentSlot.OFF_HAND;
         }
@@ -53,14 +53,14 @@ public class AIEventHandler implements Listener
 	    PlayerInventory inventory = player.getInventory();
 	    EquipmentSlot slot = this.getSlotWithItemStack(inventory, event.getBrokenItem());
 
-	    tryRefillStackInHand(player, slot, false);
+	    tryRefillStackInHand(player, slot);
 	}
     
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onBlockPlace(BlockPlaceEvent event)
 	{
 		Player player = event.getPlayer();
-		tryRefillStackInHand(player, event.getHand(), true);
+		tryRefillStackInHand(player, event.getHand());
 	}
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -69,7 +69,7 @@ public class AIEventHandler implements Listener
         Player player = event.getPlayer();
         PlayerInventory inventory = player.getInventory();
         EquipmentSlot slot = this.getSlotWithItemStack(inventory, new ItemStack(Material.BONE_MEAL));
-        tryRefillStackInHand(player, slot, true);
+        tryRefillStackInHand(player, slot);
     }
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -78,7 +78,7 @@ public class AIEventHandler implements Listener
         Player player = event.getPlayer();
         PlayerInventory inventory = player.getInventory();
         EquipmentSlot slot = this.getSlotWithItemStack(inventory, event.getItem());
-        tryRefillStackInHand(player, slot, true);
+        tryRefillStackInHand(player, slot);
     }
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -88,24 +88,24 @@ public class AIEventHandler implements Listener
         if(!(source instanceof Player)) return;
         
         Player player = (Player)source;
-        tryRefillStackInHand(player, EquipmentSlot.HAND, false);
+        tryRefillStackInHand(player, EquipmentSlot.HAND);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onFeedAnimal(PlayerInteractEntityEvent event)
     {
         Player player = event.getPlayer();
-        tryRefillStackInHand(player, event.getHand(), true);
+        tryRefillStackInHand(player, event.getHand());
     }
 
-    private void tryRefillStackInHand(Player player, EquipmentSlot slot, boolean dataValueMatters)
+    private void tryRefillStackInHand(Player player, EquipmentSlot slot)
     {
         if(slot == null) return;
         
         if(!featureEnabled(Features.RefillStacks, player)) return;
         
-        ItemStack stack = null;
-        int slotIndex = 0;
+        ItemStack stack;
+        int slotIndex;
         if(slot == EquipmentSlot.HAND)
         {
             stack = player.getInventory().getItemInMainHand();
@@ -122,12 +122,12 @@ public class AIEventHandler implements Listener
         }
 
         if (AutomaticInventory.instance.config_noAutoRefill.contains(stack.getType())) return;
-		if(!dataValueMatters || stack.getAmount() == 1)
+		if(stack.getAmount() == 1)
 		{
 		    PlayerInventory inventory = player.getInventory();
 		    AutomaticInventory.instance.getServer().getScheduler().scheduleSyncDelayedTask(
 	            AutomaticInventory.instance,
-	            new AutoRefillHotBarTask(player, inventory, slotIndex, stack.clone(), dataValueMatters),
+	            new AutoRefillHotBarTask(player, inventory, slotIndex, stack.clone()),
 	            2L);
 		}
     }
@@ -157,7 +157,7 @@ public class AIEventHandler implements Listener
 	    return false;
     }
 
-    private static boolean itemsAreSimilar(ItemStack a, ItemStack b, boolean dataValueMatters)
+    private static boolean itemsAreSimilar(ItemStack a, ItemStack b)
     {
         if(a.getType() == b.getType())
         {
@@ -194,15 +194,13 @@ public class AIEventHandler implements Listener
         private PlayerInventory targetInventory;
         private int slotToRefill;
         private ItemStack stackToReplace;
-        private boolean dataValueMatters;
-        
-	    public AutoRefillHotBarTask(Player player, PlayerInventory targetInventory, int slotToRefill, ItemStack stackToReplace, boolean dataValueMatters)
+
+	    public AutoRefillHotBarTask(Player player, PlayerInventory targetInventory, int slotToRefill, ItemStack stackToReplace)
 	    {
             this.player = player;
 	        this.targetInventory = targetInventory;
             this.slotToRefill = slotToRefill;
             this.stackToReplace = stackToReplace;
-            this.dataValueMatters = dataValueMatters;
         }
 
         @Override
@@ -218,7 +216,7 @@ public class AIEventHandler implements Listener
             {
                 ItemStack itemInSlot = this.targetInventory.getItem(i);
                 if(itemInSlot == null) continue;
-                if(itemsAreSimilar(itemInSlot, this.stackToReplace, dataValueMatters))
+                if(itemsAreSimilar(itemInSlot, this.stackToReplace))
                 {
                     int stackSize = itemInSlot.getAmount();
                     if(stackSize < bestMatchStackSize)
