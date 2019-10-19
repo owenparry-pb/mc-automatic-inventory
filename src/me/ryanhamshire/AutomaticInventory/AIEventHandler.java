@@ -91,6 +91,13 @@ public class AIEventHandler implements Listener
         tryRefillStackInHand(player, EquipmentSlot.HAND, false);
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onFeedAnimal(PlayerInteractEntityEvent event)
+    {
+        Player player = event.getPlayer();
+        tryRefillStackInHand(player, event.getHand(), true);
+    }
+
     private void tryRefillStackInHand(Player player, EquipmentSlot slot, boolean dataValueMatters)
     {
         if(slot == null) return;
