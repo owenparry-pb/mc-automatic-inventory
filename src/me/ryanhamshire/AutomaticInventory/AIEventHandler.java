@@ -402,7 +402,8 @@ public class AIEventHandler implements Listener
         return holder instanceof Chest
                 || holder instanceof ShulkerBox
                 || holder instanceof DoubleChest
-                || holder instanceof StorageMinecart;
+                || holder instanceof StorageMinecart
+                || holder instanceof Barrel;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
