@@ -369,7 +369,7 @@ public class AIEventHandler implements Listener
             if(firstEmpty < 9) return;
             playerData.firstEmptySlot = firstEmpty; 
             PickupSortTask task = new PickupSortTask(player, playerData, inventory);
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(AutomaticInventory.instance, task, 100L);
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(AutomaticInventory.instance, task, 10L);
         }
     }
 	
@@ -377,6 +377,10 @@ public class AIEventHandler implements Listener
 	{
 	    if(featureEnabled(Features.SortInventory, player))
         {
+            // Dont sort inventory if any other inventory is open
+            if (player.getOpenInventory().getTopInventory().getType() != InventoryType.CRAFTING)
+                return;
+
             new InventorySorter(inventory, 9).run();
             
             if(!playerData.isGotInventorySortInfo())
