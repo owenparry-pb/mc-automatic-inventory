@@ -97,6 +97,13 @@ public class AIEventHandler implements Listener
         Player player = event.getPlayer();
         tryRefillStackInHand(player, event.getHand());
     }
+    
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onCompostItem(PlayerInteractEvent event) {
+        if(event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock().getType() == Material.COMPOSTER) {
+            tryRefillStackInHand(event.getPlayer(), event.getHand());
+        }
+    }
 
     private void tryRefillStackInHand(Player player, EquipmentSlot slot)
     {
