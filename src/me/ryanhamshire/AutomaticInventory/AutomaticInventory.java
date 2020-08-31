@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -37,6 +38,7 @@ public class AutomaticInventory extends JavaPlugin
     Set<Material> config_noAutoRefill = new HashSet<>();
     Set<Material> config_noAutoDeposit = new HashSet<>();
     static boolean autosortEnabledByDefault = true;
+    private static String excludeItemsContainingThisString;
 		
 	//this handles data storage, like player and region data
 	public DataStore dataStore;
@@ -76,7 +78,7 @@ public class AutomaticInventory extends JavaPlugin
             else
                 this.config_noAutoRefill.add(material);
         }
-        
+
         outConfig.set("Auto Refill.Excluded Items", noAutoRefillIDs_string);
         
         List<String> noAutoDepositIDs_string = config.getStringList("Auto Deposit.Excluded Items");
@@ -101,6 +103,9 @@ public class AutomaticInventory extends JavaPlugin
 
         autosortEnabledByDefault = config.getBoolean("autosortEnabledByDefault", true);
         outConfig.set("autosortEnabledByDefault", autosortEnabledByDefault);
+
+        excludeItemsContainingThisString = config.getString("excludeItemsContainingThisString", "");
+        outConfig.set("excludeItemsContainingThisString", excludeItemsContainingThisString);
         
         try
         {
@@ -357,6 +362,8 @@ public class AutomaticInventory extends JavaPlugin
             ItemStack sourceStack = source.getItem(i);
             if(sourceStack == null) continue;
 
+            if(isItemExcludedViaName(sourceStack)) continue;
+
             if (AutomaticInventory.instance.config_noAutoDeposit.contains(sourceStack.getType())) continue;
             
             String signature = getSignature(sourceStack);
@@ -412,6 +419,18 @@ public class AutomaticInventory extends JavaPlugin
         }
 
         return signature;
+    }
+
+    //#36 Feature: exclude items that match a string specified in config
+    private static boolean isItemExcludedViaName(ItemStack itemStack)
+    {
+        if (excludeItemsContainingThisString.isEmpty())
+            return false;
+        ItemMeta meta = itemStack.getItemMeta();
+        if (!meta.hasDisplayName())
+            return false;
+        String name = meta.getDisplayName();
+        return name.contains(excludeItemsContainingThisString);
     }
     
     public class FakePlayerInteractEvent extends PlayerInteractEvent
