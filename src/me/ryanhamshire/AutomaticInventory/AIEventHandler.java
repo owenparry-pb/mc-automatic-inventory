@@ -384,10 +384,6 @@ public class AIEventHandler implements Listener
 	{
 	    if(featureEnabled(Features.SortInventory, player))
         {
-            // Dont sort inventory if any other inventory is open //I have a feeling spigot may be subject to change this type of behavior, I wouldn't rely on it...
-            if (player.getOpenInventory().getTopInventory().getType() != InventoryType.CRAFTING)
-                return;
-
             new InventorySorter(inventory, 9).run();
             
             if(!playerData.isGotInventorySortInfo())
