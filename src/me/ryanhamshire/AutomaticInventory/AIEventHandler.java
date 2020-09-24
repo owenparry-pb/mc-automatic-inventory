@@ -18,6 +18,7 @@ import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -387,7 +388,7 @@ public class AIEventHandler implements Listener
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onInteractWithOwnInventory(InventoryInteractEvent event)
+    public void onInteractWithOwnInventory(InventoryClickEvent event)
     {
         Inventory bottomInventory = event.getView().getBottomInventory();
         if(bottomInventory.getType() != InventoryType.PLAYER) return;
