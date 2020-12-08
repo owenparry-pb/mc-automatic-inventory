@@ -36,9 +36,6 @@ import java.util.Map;
 
 public class AIEventHandler implements Listener 
 {
-    //totally static abuse but can refactor later hurrr
-    static Map<Player, SortPlayerInventoryAfterDelay> playerSortTask = new HashMap<>();
-
     private EquipmentSlot getSlotWithItemStack(PlayerInventory inventory, ItemStack brokenItem)
     {
         if(itemsAreSimilar(inventory.getItemInMainHand(), brokenItem))
@@ -386,28 +383,6 @@ public class AIEventHandler implements Listener
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(AutomaticInventory.instance, task, 10L);
         }
     }
-
-    //No longer needed since newer versions of 1.16 fire InventoryCloseEvent for personal inventories, as per the usual.
-//    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-//    public void onInteractWithOwnInventory(InventoryClickEvent event)
-//    {
-//        Inventory bottomInventory = event.getView().getBottomInventory();
-//        if(bottomInventory.getType() != InventoryType.PLAYER) return;
-//
-//        HumanEntity holder = ((PlayerInventory)bottomInventory).getHolder();
-//        if(!(holder instanceof Player)) return;
-//
-//        Player player = (Player)holder;
-//
-//        //Only run if it's the player managing their own inventory since the client fires no other events
-//        if (player.getOpenInventory().getType() != InventoryType.CRAFTING)
-//            return;
-//
-//        PlayerData playerData = PlayerData.FromPlayer(player);
-//
-//        SortPlayerInventoryAfterDelay task = new SortPlayerInventoryAfterDelay(player, playerData, bottomInventory);
-//        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(AutomaticInventory.instance, task, 160L); //8 seconds
-//    }
 	
 	static void sortPlayerIfEnabled(Player player, PlayerData playerData, Inventory inventory)
 	{
@@ -482,32 +457,6 @@ class PickupSortTask implements Runnable
         AIEventHandler.sortPlayerIfEnabled(this.player, this.playerData, this.playerInventory);
         
         this.playerData.firstEmptySlot = -1;
-    }
-}
-
-class SortPlayerInventoryAfterDelay implements Runnable
-{
-    private Player player;
-    private PlayerData playerData;
-    private Inventory playerInventory;
-
-    SortPlayerInventoryAfterDelay(Player player, PlayerData playerData, Inventory playerInventory)
-    {
-        this.player = player;
-        this.playerData = playerData;
-        this.playerInventory = playerInventory;
-        AIEventHandler.playerSortTask.put(player, this);
-    }
-
-    @Override
-    public void run()
-    {
-        SortPlayerInventoryAfterDelay task = AIEventHandler.playerSortTask.get(player);
-        if (task != this)
-            return;
-
-        AIEventHandler.sortPlayerIfEnabled(this.player, this.playerData, this.playerInventory);
-        AIEventHandler.playerSortTask.remove(player);
     }
 }
 
