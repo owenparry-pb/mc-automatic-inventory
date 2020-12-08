@@ -135,7 +135,7 @@ public class AutomaticInventory extends JavaPlugin
 
 		try
         {
-            new Metrics(this);
+            new Metrics(this, 3547);
         }
         catch (Throwable ignored){}
 
