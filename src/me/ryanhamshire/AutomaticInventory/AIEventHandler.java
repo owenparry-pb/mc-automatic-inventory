@@ -405,7 +405,8 @@ public class AIEventHandler implements Listener
         InventoryType inventoryType = inventory.getType();
         if(inventoryType != InventoryType.CHEST
                 && inventoryType != InventoryType.ENDER_CHEST
-                && inventoryType != InventoryType.SHULKER_BOX) return false;
+                && inventoryType != InventoryType.SHULKER_BOX
+                && inventoryType != InventoryType.BARREL) return false;
 
         if(name != null && name.contains("*")) return false;
         
