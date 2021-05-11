@@ -57,10 +57,16 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-# ZEINTELLIJ
+
+# IntelliJ
 .idea
 **/*.iml
 out/
 target/
 *.MF
 *.name
+
+# VS Code
+.classpath
+.project
+.settings
