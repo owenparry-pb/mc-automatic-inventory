@@ -142,7 +142,19 @@ class PlayerData
         this.isDirty = true;
         this.sortInventory = sortInventory;
     }
-    
+
+    private boolean quickDepositEnabled = AutomaticInventory.quickDepositEnabledByDefault;
+    boolean isQuickDepositEnabled()
+    {
+        this.waitForLoadComplete();
+        return quickDepositEnabled;
+    }
+    void setQuickDepositEnabled(boolean quickDepositEnabled)
+    {
+        this.isDirty = true;
+        this.quickDepositEnabled = quickDepositEnabled;
+    }
+
     void incrementManualDeposits()
     {
         this.manualDepositsThisSession++;
@@ -205,6 +217,7 @@ class PlayerData
             config.set("Player Name", this.playerName);
             config.set("Sort Chests", this.sortChests);
             config.set("Sort Personal Inventory", this.sortInventory);
+            config.set("Quick Deposit Enabled", this.quickDepositEnabled);
             config.set("Used Quick Deposit", this.usedQuickDeposit);
             config.set("Received Messages.Personal Inventory", this.gotInventorySortInfo);
             config.set("Received Messages.Chest Inventory", this.gotChestSortInfo);
@@ -240,8 +253,9 @@ class PlayerData
                 {                   
                     needRetry = false;
                     FileConfiguration config = YamlConfiguration.loadConfiguration(playerFile);
-                    this.sortChests = config.getBoolean("Sort Chests", true);
-                    this.sortInventory = config.getBoolean("Sort Personal Inventory", true);
+                    this.sortChests = config.getBoolean("Sort Chests", AutomaticInventory.autosortEnabledByDefault);
+                    this.sortInventory = config.getBoolean("Sort Personal Inventory", AutomaticInventory.autosortEnabledByDefault);
+                    this.quickDepositEnabled = config.getBoolean("Quick Deposit Enabled", AutomaticInventory.quickDepositEnabledByDefault);
                     this.usedQuickDeposit = config.getBoolean("Used Quick Deposit", false);
                     this.gotChestSortInfo = config.getBoolean("Received Messages.Chest Inventory", false);
                     this.gotInventorySortInfo = config.getBoolean("Received Messages.Personal Inventory", false);

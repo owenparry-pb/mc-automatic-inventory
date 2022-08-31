@@ -19,5 +19,8 @@ public enum Messages
     SuccessfulDepositAll2,
     ChestLidBlocked,
     DepositAllAdvertisement,
-    QuickDepositAdvertisement3
+    QuickDepositAdvertisement3,
+    QuickDepositHelp,
+    QuickDepositEnabled,
+    QuickDepositDisabled
 }

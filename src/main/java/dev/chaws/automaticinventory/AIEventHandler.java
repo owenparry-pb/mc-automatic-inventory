@@ -151,25 +151,14 @@ public class AIEventHandler implements Listener
 	{
         if(!AutomaticInventory.hasPermission(feature, player)) return false;
 	    
-        PlayerData data = PlayerData.FromPlayer(player);
-	    
-	    switch(feature)
-        {
-            case SortInventory:
-                if(data.isSortInventory()) return true;
-                break;
-            case SortChests:
-                if(data.isSortChests()) return true;
-                break;
-            case RefillStacks:
-                return true;
-            case QuickDeposit:
-                return true;
-            case DepositAll:
-                return true;
-        }
-	    
-	    return false;
+        PlayerData playerConfig = PlayerData.FromPlayer(player);
+
+        return switch (feature) {
+            case SortInventory -> playerConfig.isSortInventory();
+            case SortChests -> playerConfig.isSortChests();
+            case QuickDeposit -> playerConfig.isQuickDepositEnabled();
+            case RefillStacks, DepositAll -> true;
+        };
     }
 
     private static boolean itemsAreSimilar(ItemStack a, ItemStack b)

@@ -54,7 +54,10 @@ public class DataStore
         this.addDefault(defaults, Messages.SuccessfulDepositAll2, "Deposited {0} items into nearby chests.", null);
         this.addDefault(defaults, Messages.ChestLidBlocked, "That chest isn't accessible.", null);
         this.addDefault(defaults, Messages.DepositAllAdvertisement, "TIP: Instantly deposit all items from your inventory into all the right nearby boxes with /DepositAll!", null);
-        
+        this.addDefault(defaults, Messages.QuickDepositHelp, "Options are /quickdeposit toggle, /quickdeposit enable, and /quickdeposit disable.", null);
+        this.addDefault(defaults, Messages.QuickDepositEnabled, "Enabled quick deposit. Try crouching and clicking on a chest.", null);
+        this.addDefault(defaults, Messages.QuickDepositDisabled, "Disabled quick deposit.", null);
+
         //load the config file
         FileConfiguration config = YamlConfiguration.loadConfiguration(new File(messagesFilePath));
         FileConfiguration outConfig = new YamlConfiguration();

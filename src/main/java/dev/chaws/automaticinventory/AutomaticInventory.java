@@ -40,6 +40,7 @@ public class AutomaticInventory extends JavaPlugin
     Set<Material> config_noAutoRefill = new HashSet<>();
     Set<Material> config_noAutoDeposit = new HashSet<>();
     static boolean autosortEnabledByDefault = true;
+	static boolean quickDepositEnabledByDefault = true;
     private static List<String> excludeItemsContainingThisString;
 		
 	//this handles data storage, like player and region data
@@ -253,6 +254,51 @@ public class AutomaticInventory extends JavaPlugin
 		    playerData.setUsedDepositAll(true);
 		    return true;
         }
+
+		else if(cmd.getName().equalsIgnoreCase("quickdeposit") && player != null)
+		{
+			if(!hasPermission(Features.QuickDeposit, player))
+			{
+				sendMessage(player, TextMode.Err, Messages.NoPermissionForFeature);
+				return true;
+			}
+
+			if(args.length < 1)
+			{
+				sendMessage(player, TextMode.Instr, Messages.QuickDepositHelp);
+				return true;
+			}
+
+			String optionName = args[0].toLowerCase();
+			if(optionName.startsWith("toggle"))
+			{
+				playerData.setQuickDepositEnabled(!playerData.isQuickDepositEnabled());
+
+				if(playerData.isQuickDepositEnabled())
+					sendMessage(player, TextMode.Success, Messages.QuickDepositEnabled);
+				else
+					sendMessage(player, TextMode.Success, Messages.QuickDepositDisabled);
+			}
+			else if(optionName.startsWith("enable"))
+			{
+				playerData.setQuickDepositEnabled(true);
+				sendMessage(player, TextMode.Success, Messages.QuickDepositEnabled);
+			}
+			else if(optionName.startsWith("disable"))
+			{
+				playerData.setQuickDepositEnabled(false);
+				sendMessage(player, TextMode.Success, Messages.QuickDepositDisabled);
+			}
+			else
+			{
+				sendMessage(player, TextMode.Err, Messages.QuickDepositHelp);
+				return true;
+			}
+
+			DeliverTutorialHyperlink(player);
+
+			return true;
+		}
 
 		return false;
 	}

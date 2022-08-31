@@ -48,6 +48,11 @@ spigot {
             permission 'automaticinventory.depositall'
             usage '/DepositAll'
         }
+        quickdeposit {
+            description 'Toggles quick deposit (shift+left click on chests).'
+            permission 'automaticinventory.quickdeposit'
+            usage '/quickdeposit'
+        }
     }
     permissions {
         'automaticinventory.admin.*' {
