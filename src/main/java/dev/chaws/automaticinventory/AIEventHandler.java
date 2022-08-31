@@ -1,6 +1,6 @@
 //Copyright 2015 Ryan Hamshire
 
-package me.ryanhamshire.AutomaticInventory;
+package dev.chaws.automaticinventory;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -33,6 +33,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.lang.Integer.valueOf;
 
 public class AIEventHandler implements Listener 
 {
@@ -523,25 +525,22 @@ class InventorySorter implements Runnable
         }
     }
     
-    private class StackComparator implements Comparator<ItemStack>
+    private static class StackComparator implements Comparator<ItemStack>
     {
-        @SuppressWarnings("deprecation")
         @Override
         public int compare(ItemStack a, ItemStack b)
         {
-            int result = new Integer(b.getMaxStackSize()).compareTo(a.getMaxStackSize());
+            int result = Integer.compare(b.getMaxStackSize(), a.getMaxStackSize());
             if(result != 0) return result;
 
             result = b.getType().compareTo(a.getType());
             if(result != 0) return result;
             
-            result = new Byte(b.getData().getData()).compareTo(a.getData().getData());
+            result = Byte.compare(b.getData().getData(), a.getData().getData());
             if(result != 0) return result;
             
-            result = new Integer(b.getAmount()).compareTo(a.getAmount());
+            result = Integer.compare(b.getAmount(), a.getAmount());
             return result;
         }
     }
 }
-
-

@@ -1,4 +1,4 @@
-package me.ryanhamshire.AutomaticInventory;
+package dev.chaws.automaticinventory;
 
 enum Features
 {

@@ -1,6 +1,6 @@
 //Copyright 2015 Ryan Hamshire
 
-package me.ryanhamshire.AutomaticInventory;
+package dev.chaws.automaticinventory;
 
 import java.io.File;
 import java.io.PrintWriter;

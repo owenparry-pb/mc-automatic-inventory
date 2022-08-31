@@ -1,7 +1,8 @@
 //Copyright 2015 Ryan Hamshire
 
-package me.ryanhamshire.AutomaticInventory;
+package dev.chaws.automaticinventory;
 
+import kr.entree.spigradle.annotations.PluginMain;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 
+@PluginMain
 public class AutomaticInventory extends JavaPlugin
 {
 	//for convenience, a reference to the instance of this plugin
@@ -51,7 +53,6 @@ public class AutomaticInventory extends JavaPlugin
 	public void onEnable()
 	{
 	    log = getLogger();
-		AddLogEntry("AutomaticInventory enabled.");		
 		
 		instance = this;
 		
