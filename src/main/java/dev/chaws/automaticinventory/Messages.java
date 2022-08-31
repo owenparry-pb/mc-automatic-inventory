@@ -22,5 +22,8 @@ public enum Messages
     QuickDepositAdvertisement3,
     QuickDepositHelp,
     QuickDepositEnabled,
-    QuickDepositDisabled
+    QuickDepositDisabled,
+    AutoRefillHelp,
+    AutoRefillEnabled,
+    AutoRefillDisabled
 }

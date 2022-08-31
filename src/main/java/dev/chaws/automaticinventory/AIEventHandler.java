@@ -157,7 +157,8 @@ public class AIEventHandler implements Listener
             case SortInventory -> playerConfig.isSortInventory();
             case SortChests -> playerConfig.isSortChests();
             case QuickDeposit -> playerConfig.isQuickDepositEnabled();
-            case RefillStacks, DepositAll -> true;
+            case RefillStacks -> playerConfig.isAutoRefillEnabled();
+            case DepositAll -> true;
         };
     }
 

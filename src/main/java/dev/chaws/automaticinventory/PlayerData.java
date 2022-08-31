@@ -155,6 +155,18 @@ class PlayerData
         this.quickDepositEnabled = quickDepositEnabled;
     }
 
+    private boolean autoRefillEnabled = AutomaticInventory.autoRefillEnabledByDefault;
+    boolean isAutoRefillEnabled()
+    {
+        this.waitForLoadComplete();
+        return autoRefillEnabled;
+    }
+    void setAutoRefillEnabled(boolean autoRefillEnabled)
+    {
+        this.isDirty = true;
+        this.autoRefillEnabled = autoRefillEnabled;
+    }
+
     void incrementManualDeposits()
     {
         this.manualDepositsThisSession++;
@@ -218,6 +230,7 @@ class PlayerData
             config.set("Sort Chests", this.sortChests);
             config.set("Sort Personal Inventory", this.sortInventory);
             config.set("Quick Deposit Enabled", this.quickDepositEnabled);
+            config.set("Auto Refill Enabled", this.autoRefillEnabled);
             config.set("Used Quick Deposit", this.usedQuickDeposit);
             config.set("Received Messages.Personal Inventory", this.gotInventorySortInfo);
             config.set("Received Messages.Chest Inventory", this.gotChestSortInfo);
@@ -256,6 +269,7 @@ class PlayerData
                     this.sortChests = config.getBoolean("Sort Chests", AutomaticInventory.autosortEnabledByDefault);
                     this.sortInventory = config.getBoolean("Sort Personal Inventory", AutomaticInventory.autosortEnabledByDefault);
                     this.quickDepositEnabled = config.getBoolean("Quick Deposit Enabled", AutomaticInventory.quickDepositEnabledByDefault);
+                    this.autoRefillEnabled = config.getBoolean("Auto Refill Enabled", AutomaticInventory.autoRefillEnabledByDefault);
                     this.usedQuickDeposit = config.getBoolean("Used Quick Deposit", false);
                     this.gotChestSortInfo = config.getBoolean("Received Messages.Chest Inventory", false);
                     this.gotInventorySortInfo = config.getBoolean("Received Messages.Personal Inventory", false);

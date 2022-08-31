@@ -41,6 +41,7 @@ public class AutomaticInventory extends JavaPlugin
     Set<Material> config_noAutoDeposit = new HashSet<>();
     static boolean autosortEnabledByDefault = true;
 	static boolean quickDepositEnabledByDefault = true;
+	static boolean autoRefillEnabledByDefault = true;
     private static List<String> excludeItemsContainingThisString;
 		
 	//this handles data storage, like player and region data
@@ -292,6 +293,51 @@ public class AutomaticInventory extends JavaPlugin
 			else
 			{
 				sendMessage(player, TextMode.Err, Messages.QuickDepositHelp);
+				return true;
+			}
+
+			DeliverTutorialHyperlink(player);
+
+			return true;
+		}
+
+		else if(cmd.getName().equalsIgnoreCase("autorefill") && player != null)
+		{
+			if(!hasPermission(Features.RefillStacks, player))
+			{
+				sendMessage(player, TextMode.Err, Messages.NoPermissionForFeature);
+				return true;
+			}
+
+			if(args.length < 1)
+			{
+				sendMessage(player, TextMode.Instr, Messages.AutoRefillHelp);
+				return true;
+			}
+
+			String optionName = args[0].toLowerCase();
+			if(optionName.startsWith("toggle"))
+			{
+				playerData.setAutoRefillEnabled(!playerData.isAutoRefillEnabled());
+
+				if(playerData.isAutoRefillEnabled())
+					sendMessage(player, TextMode.Success, Messages.AutoRefillEnabled);
+				else
+					sendMessage(player, TextMode.Success, Messages.AutoRefillDisabled);
+			}
+			else if(optionName.startsWith("enable"))
+			{
+				playerData.setAutoRefillEnabled(true);
+				sendMessage(player, TextMode.Success, Messages.AutoRefillEnabled);
+			}
+			else if(optionName.startsWith("disable"))
+			{
+				playerData.setAutoRefillEnabled(false);
+				sendMessage(player, TextMode.Success, Messages.AutoRefillDisabled);
+			}
+			else
+			{
+				sendMessage(player, TextMode.Err, Messages.AutoRefillHelp);
 				return true;
 			}
 

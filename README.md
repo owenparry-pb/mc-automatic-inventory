@@ -74,3 +74,9 @@ Copy AutomaticInventory.jar into your server's plugins folder and then execute t
 **/quickdeposit enable** turns on quick deposit.
 
 **/quickdeposit disable** turns off quick deposit.
+
+**/autorefill toggle** toggles hotbar stack auto refill on or off.
+
+**/autorefill enable** turns on hotbar stack auto refill.
+
+**/autorefill disable** turns off hotbar stack auto refill.

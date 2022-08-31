@@ -53,6 +53,11 @@ spigot {
             permission 'automaticinventory.quickdeposit'
             usage '/quickdeposit'
         }
+        autorefill {
+            description 'Toggles quto refill, which refills your hotbar slots when items are depleted or break.'
+            permission 'automaticinventory.refillstacks'
+            usage '/autorefill'
+        }
     }
     permissions {
         'automaticinventory.admin.*' {
