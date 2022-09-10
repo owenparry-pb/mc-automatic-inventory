@@ -1,17 +1,18 @@
 package dev.chaws.automaticinventory;
 
+import dev.chaws.automaticinventory.configuration.PlayerConfig;
+import dev.chaws.automaticinventory.events.FakePlayerInteractEvent;
+import dev.chaws.automaticinventory.listeners.AutomaticInventoryListener;
+import dev.chaws.automaticinventory.messaging.Messages;
+import dev.chaws.automaticinventory.utilities.BlockUtilities;
 import dev.chaws.automaticinventory.utilities.Chat;
 import dev.chaws.automaticinventory.utilities.TextMode;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
 import java.util.Queue;
@@ -59,7 +60,7 @@ public class FindChestsThread extends Thread {
 			var type = this.getType(current);
 			if (isChest(type)) {
 				var overType = this.getType(new Vector(current.getBlockX(), current.getBlockY() + 1, current.getBlockZ()));
-				if (!AutomaticInventory.preventsChestOpen(type, overType)) {
+				if (!BlockUtilities.preventsChestOpen(type, overType)) {
 					chestLocations.add(this.makeLocation(current));
 				}
 			}
@@ -190,21 +191,21 @@ public class FindChestsThread extends Thread {
 			var chestLocation = this.remainingChestLocations.poll();
 			if (chestLocation == null) {
 				Chat.sendMessage(this.player, TextMode.Success, Messages.SuccessfulDepositAll2, String.valueOf(this.runningDepositRecord.totalItems));
-				var playerData = PlayerData.FromPlayer(player);
-				if (Math.random() < .1 && !playerData.isGotQuickDepositInfo() && AIEventHandler.featureEnabled(Features.QuickDeposit, player)) {
+				var playerConfig = PlayerConfig.FromPlayer(player);
+				if (Math.random() < .1 && !playerConfig.isGotQuickDepositInfo() && AutomaticInventoryListener.featureEnabled(Features.QuickDeposit, player)) {
 					Chat.sendMessage(player, TextMode.Instr, Messages.QuickDepositAdvertisement3);
-					playerData.setGotQuickDepositInfo(true);
+					playerConfig.setGotQuickDepositInfo(true);
 				}
 			} else {
 				var block = chestLocation.getBlock();
-				PlayerInteractEvent fakeEvent = AutomaticInventory.instance.new FakePlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, player.getInventory().getItemInMainHand(), block, BlockFace.UP);
+				PlayerInteractEvent fakeEvent = new FakePlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, player.getInventory().getItemInMainHand(), block, BlockFace.UP);
 				Bukkit.getServer().getPluginManager().callEvent(fakeEvent);
 				if (!fakeEvent.isCancelled()) {
 					var state = block.getState();
 					if (state instanceof InventoryHolder) {
 						var chest = (InventoryHolder) state;
 						var chestInventory = chest.getInventory();
-						if (!this.respectExclusions || AIEventHandler.isSortableChestInventory(chestInventory,
+						if (!this.respectExclusions || AutomaticInventoryListener.isSortableChestInventory(chestInventory,
 							state instanceof Nameable ? ((Nameable) state).getCustomName() : null)) {
 							var playerInventory = player.getInventory();
 

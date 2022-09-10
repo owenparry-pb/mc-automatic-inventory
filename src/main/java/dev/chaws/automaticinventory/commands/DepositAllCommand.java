@@ -1,14 +1,17 @@
 package dev.chaws.automaticinventory.commands;
 
 import dev.chaws.automaticinventory.*;
+import dev.chaws.automaticinventory.configuration.PlayerConfig;
+import dev.chaws.automaticinventory.listeners.AutomaticInventoryListener;
+import dev.chaws.automaticinventory.messaging.Messages;
 import dev.chaws.automaticinventory.utilities.*;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.entity.Player;
 
 public class DepositAllCommand implements IAutomaticInventoryCommand {
-	public boolean execute(Player player, PlayerData playerData, String[] args) {
+	public boolean execute(Player player, PlayerConfig playerConfig, String[] args) {
 		//ensure player has feature enabled
-		if (!AIEventHandler.featureEnabled(Features.DepositAll, player)) {
+		if (!AutomaticInventoryListener.featureEnabled(Features.DepositAll, player)) {
 			Chat.sendMessage(player, TextMode.Err, Messages.NoPermissionForFeature);
 			return true;
 		}
@@ -35,7 +38,7 @@ public class DepositAllCommand implements IAutomaticInventoryCommand {
 		thread.setPriority(Thread.MIN_PRIORITY);
 		thread.start();
 
-		playerData.setUsedDepositAll(true);
+		playerConfig.setUsedDepositAll(true);
 		return true;
 	}
 }

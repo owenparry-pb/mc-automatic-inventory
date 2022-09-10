@@ -1,26 +1,28 @@
 //Copyright 2015 Ryan Hamshire
-package dev.chaws.automaticinventory;
+package dev.chaws.automaticinventory.messaging;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
+import dev.chaws.automaticinventory.AutomaticInventory;
+import dev.chaws.automaticinventory.CustomizableMessage;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class DataStore {
+public class LocalizedMessages {
 	//in-memory cache for messages
 	private String[] messages;
 
 	private final static String dataLayerFolderPath = "plugins" + File.separator + "AutomaticInventory";
-	final static String playerDataFolderPath = dataLayerFolderPath + File.separator + "PlayerData";
-	final static String messagesFilePath = dataLayerFolderPath + File.separator + "messages.yml";
+	public final static String playerConfigFolderPath = dataLayerFolderPath + File.separator + "PlayerConfig";
+	public final static String messagesFilePath = dataLayerFolderPath + File.separator + "messages.yml";
 
-	public DataStore() {
+	public LocalizedMessages() {
 		//ensure data folders exist
-		var playerDataFolder = new File(playerDataFolderPath);
-		if (!playerDataFolder.exists()) {
-			playerDataFolder.mkdirs();
+		var playerConfigFolder = new File(playerConfigFolderPath);
+		if (!playerConfigFolder.exists()) {
+			playerConfigFolder.mkdirs();
 		}
 
 		this.loadMessages();
@@ -33,7 +35,7 @@ public class DataStore {
 		var defaults = new HashMap<String, CustomizableMessage>();
 
 		//initialize defaults
-		//this.addDefault(defaults, Messages.NoManagedWorld, "The PopulationDensity plugin has not been properly configured.  Please update your config.yml to specify a world to manage.", null);
+		//this.addDefault(defaults, Messages.NoManagedWorld, "The PopulationDensity plugin has not been properly configured.  Please update your configuration.yml to specify a world to manage.", null);
 		this.addDefault(defaults, Messages.NoPermissionForFeature, "You don't have permission to use that feature.", null);
 		this.addDefault(defaults, Messages.ChestSortEnabled, "Now auto-sorting any chests you use.", null);
 		this.addDefault(defaults, Messages.ChestSortDisabled, "Stopped auto-sorting chests you use.", null);
@@ -57,7 +59,7 @@ public class DataStore {
 		this.addDefault(defaults, Messages.AutoRefillEnabled, "Auto refill enabled.", null);
 		this.addDefault(defaults, Messages.AutoRefillDisabled, "Auto refill disabled.", null);
 
-		//load the config file
+		//load the configuration file
 		FileConfiguration config = YamlConfiguration.loadConfiguration(new File(messagesFilePath));
 		FileConfiguration outConfig = new YamlConfiguration();
 
@@ -69,7 +71,7 @@ public class DataStore {
 
 			//if default is missing, log an error and use some fake data for now so that the plugin can run
 			if (messageData == null) {
-				AutomaticInventory.AddLogEntry("Missing message for " + messageID.name() + ".  Please contact the developer.");
+				AutomaticInventory.log.info("Missing message for " + messageID.name() + ".  Please contact the developer.");
 				messageData = new CustomizableMessage(messageID, "Missing message!  ID: " + messageID.name() + ".  Please contact a server admin.", null);
 			}
 
@@ -89,9 +91,9 @@ public class DataStore {
 		//save any changes
 		try {
 			outConfig.options().header("Use a YAML editor like NotepadPlusPlus to edit this file.  \nAfter editing, back up your changes before reloading the server in case you made a syntax error.  \nUse ampersands (&) for formatting codes, which are documented here: http://minecraft.gamepedia.com/Formatting_codes");
-			outConfig.save(DataStore.messagesFilePath);
+			outConfig.save(LocalizedMessages.messagesFilePath);
 		} catch (IOException exception) {
-			AutomaticInventory.AddLogEntry("Unable to write to the configuration file at \"" + DataStore.messagesFilePath + "\"");
+			AutomaticInventory.log.info("Unable to write to the configuration file at \"" + LocalizedMessages.messagesFilePath + "\"");
 		}
 
 		defaults.clear();

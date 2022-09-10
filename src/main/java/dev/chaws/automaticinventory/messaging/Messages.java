@@ -1,6 +1,6 @@
 //Copyright 2015 Ryan Hamshire
 
-package dev.chaws.automaticinventory;
+package dev.chaws.automaticinventory.messaging;
 
 public enum Messages {
 	AutoSortHelp,

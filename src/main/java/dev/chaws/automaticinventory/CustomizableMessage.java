@@ -2,6 +2,8 @@
 
 package dev.chaws.automaticinventory;
 
+import dev.chaws.automaticinventory.messaging.Messages;
+
 public class CustomizableMessage {
 	public Messages id;
 	public String text;

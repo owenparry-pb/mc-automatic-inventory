@@ -2,14 +2,14 @@ package dev.chaws.automaticinventory.commands;
 
 import dev.chaws.automaticinventory.AutomaticInventory;
 import dev.chaws.automaticinventory.Features;
-import dev.chaws.automaticinventory.Messages;
-import dev.chaws.automaticinventory.PlayerData;
+import dev.chaws.automaticinventory.messaging.Messages;
+import dev.chaws.automaticinventory.configuration.PlayerConfig;
 import dev.chaws.automaticinventory.utilities.Chat;
 import dev.chaws.automaticinventory.utilities.TextMode;
 import org.bukkit.entity.Player;
 
 public class AutoSortCommand implements IAutomaticInventoryCommand {
-	public boolean execute(Player player, PlayerData playerData, String[] args) {
+	public boolean execute(Player player, PlayerConfig playerConfig, String[] args) {
 		if (args.length < 1) {
 			Chat.sendMessage(player, TextMode.Instr, Messages.AutoSortHelp);
 			return true;
@@ -22,9 +22,9 @@ public class AutoSortCommand implements IAutomaticInventoryCommand {
 				return true;
 			}
 
-			playerData.setSortChests(!playerData.isSortChests());
+			playerConfig.setSortChests(!playerConfig.isSortChests());
 
-			if (playerData.isSortChests()) {
+			if (playerConfig.isSortChests()) {
 				Chat.sendMessage(player, TextMode.Success, Messages.ChestSortEnabled);
 			} else {
 				Chat.sendMessage(player, TextMode.Success, Messages.ChestSortDisabled);
@@ -35,9 +35,9 @@ public class AutoSortCommand implements IAutomaticInventoryCommand {
 				return true;
 			}
 
-			playerData.setSortInventory(!playerData.isSortInventory());
+			playerConfig.setSortInventory(!playerConfig.isSortInventory());
 
-			if (playerData.isSortInventory()) {
+			if (playerConfig.isSortInventory()) {
 				Chat.sendMessage(player, TextMode.Success, Messages.InventorySortEnabled);
 			} else {
 				Chat.sendMessage(player, TextMode.Success, Messages.InventorySortDisabled);

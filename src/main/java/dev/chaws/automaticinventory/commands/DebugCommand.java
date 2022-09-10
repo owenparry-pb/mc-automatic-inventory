@@ -1,11 +1,11 @@
 package dev.chaws.automaticinventory.commands;
 
-import dev.chaws.automaticinventory.PlayerData;
+import dev.chaws.automaticinventory.configuration.PlayerConfig;
 import org.bukkit.entity.Player;
 
 public class DebugCommand implements IAutomaticInventoryCommand {
 	@Override
-	public boolean execute(Player player, PlayerData playerData, String[] args) {
+	public boolean execute(Player player, PlayerConfig playerConfig, String[] args) {
 		var inventory = player.getInventory();
 		inventory.getItemInMainHand().setDurability(Short.MAX_VALUE);
 

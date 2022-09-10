@@ -1,12 +1,14 @@
 package dev.chaws.automaticinventory.commands;
 
 import dev.chaws.automaticinventory.*;
+import dev.chaws.automaticinventory.configuration.PlayerConfig;
+import dev.chaws.automaticinventory.messaging.Messages;
 import dev.chaws.automaticinventory.utilities.Chat;
 import dev.chaws.automaticinventory.utilities.TextMode;
 import org.bukkit.entity.Player;
 
 public class AutoRefillCommand implements IAutomaticInventoryCommand {
-	public boolean execute(Player player, PlayerData playerData, String[] args) {
+	public boolean execute(Player player, PlayerConfig playerConfig, String[] args) {
 		if (!AutomaticInventory.hasPermission(Features.RefillStacks, player)) {
 			Chat.sendMessage(player, TextMode.Err, Messages.NoPermissionForFeature);
 			return true;
@@ -19,18 +21,18 @@ public class AutoRefillCommand implements IAutomaticInventoryCommand {
 
 		var optionName = args[0].toLowerCase();
 		if (optionName.startsWith("toggle")) {
-			playerData.setAutoRefillEnabled(!playerData.isAutoRefillEnabled());
+			playerConfig.setAutoRefillEnabled(!playerConfig.isAutoRefillEnabled());
 
-			if (playerData.isAutoRefillEnabled()) {
+			if (playerConfig.isAutoRefillEnabled()) {
 				Chat.sendMessage(player, TextMode.Success, Messages.AutoRefillEnabled);
 			} else {
 				Chat.sendMessage(player, TextMode.Success, Messages.AutoRefillDisabled);
 			}
 		} else if (optionName.startsWith("enable")) {
-			playerData.setAutoRefillEnabled(true);
+			playerConfig.setAutoRefillEnabled(true);
 			Chat.sendMessage(player, TextMode.Success, Messages.AutoRefillEnabled);
 		} else if (optionName.startsWith("disable")) {
-			playerData.setAutoRefillEnabled(false);
+			playerConfig.setAutoRefillEnabled(false);
 			Chat.sendMessage(player, TextMode.Success, Messages.AutoRefillDisabled);
 		} else {
 			Chat.sendMessage(player, TextMode.Err, Messages.AutoRefillHelp);

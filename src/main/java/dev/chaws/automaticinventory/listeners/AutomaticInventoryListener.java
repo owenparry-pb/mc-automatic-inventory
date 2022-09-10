@@ -1,7 +1,14 @@
 //Copyright 2015 Ryan Hamshire
 
-package dev.chaws.automaticinventory;
+package dev.chaws.automaticinventory.listeners;
 
+import dev.chaws.automaticinventory.AutomaticInventory;
+import dev.chaws.automaticinventory.Features;
+import dev.chaws.automaticinventory.configuration.GlobalConfig;
+import dev.chaws.automaticinventory.events.FakePlayerInteractEvent;
+import dev.chaws.automaticinventory.messaging.Messages;
+import dev.chaws.automaticinventory.configuration.PlayerConfig;
+import dev.chaws.automaticinventory.utilities.BlockUtilities;
 import dev.chaws.automaticinventory.utilities.Chat;
 import dev.chaws.automaticinventory.utilities.TextMode;
 import org.bukkit.Bukkit;
@@ -9,7 +16,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.*;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
@@ -25,13 +31,12 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.*;
-import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class AIEventHandler implements Listener {
+public class AutomaticInventoryListener implements Listener {
 	private EquipmentSlot getSlotWithItemStack(PlayerInventory inventory, ItemStack brokenItem) {
 		if (itemsAreSimilar(inventory.getItemInMainHand(), brokenItem)) {
 			return EquipmentSlot.HAND;
@@ -122,7 +127,7 @@ public class AIEventHandler implements Listener {
 			return;
 		}
 
-		if (AutomaticInventory.instance.config_noAutoRefill.contains(stack.getType())) {
+		if (GlobalConfig.instance.config_noAutoRefill.contains(stack.getType())) {
 			return;
 		}
 		if (stack.getAmount() == 1) {
@@ -139,7 +144,7 @@ public class AIEventHandler implements Listener {
 			return false;
 		}
 
-		var playerConfig = PlayerData.FromPlayer(player);
+		var playerConfig = PlayerConfig.FromPlayer(player);
 
 		return switch (feature) {
 			case SortInventory -> playerConfig.isSortInventory();
@@ -230,10 +235,10 @@ public class AIEventHandler implements Listener {
 			this.targetInventory.setItem(this.slotToRefill, bestMatchStack);
 			this.targetInventory.clear(bestMatchSlot);
 
-			var playerData = PlayerData.FromPlayer(player);
-			if (!playerData.isGotRestackInfo()) {
+			var playerConfig = PlayerConfig.FromPlayer(player);
+			if (!playerConfig.isGotRestackInfo()) {
 				Chat.sendMessage(player, TextMode.Info, Messages.AutoRefillEducation);
-				playerData.setGotRestackInfo(true);
+				playerConfig.setGotRestackInfo(true);
 			}
 		}
 	}
@@ -259,7 +264,7 @@ public class AIEventHandler implements Listener {
 			return;
 		}
 
-		PlayerInteractEvent fakeEvent = AutomaticInventory.instance.new FakePlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, player.getInventory().getItemInMainHand(), clickedBlock, BlockFace.EAST);
+		PlayerInteractEvent fakeEvent = new FakePlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, player.getInventory().getItemInMainHand(), clickedBlock, BlockFace.EAST);
 		Bukkit.getServer().getPluginManager().callEvent(fakeEvent);
 		if (fakeEvent.isCancelled()) {
 			return;
@@ -272,7 +277,7 @@ public class AIEventHandler implements Listener {
 		event.setCancelled(true);
 
 		var aboveBlockID = clickedBlock.getRelative(BlockFace.UP).getType();
-		if (AutomaticInventory.preventsChestOpen(clickedBlock.getType(), aboveBlockID)) {
+		if (BlockUtilities.preventsChestOpen(clickedBlock.getType(), aboveBlockID)) {
 			Chat.sendMessage(player, TextMode.Err, Messages.ChestLidBlocked);
 			return;
 		}
@@ -288,9 +293,9 @@ public class AIEventHandler implements Listener {
 			Chat.sendMessage(player, TextMode.Success, Messages.SuccessfulDeposit2, String.valueOf(deposits.totalItems));
 
 			//make a note that quick deposit was used so that player will not be bothered with advertisement messages again.
-			var playerData = PlayerData.FromPlayer(player);
-			if (!playerData.isUsedQuickDeposit()) {
-				playerData.setUsedQuickDeposit(true);
+			var playerConfig = PlayerConfig.FromPlayer(player);
+			if (!playerConfig.isUsedQuickDeposit()) {
+				playerConfig.setUsedQuickDeposit(true);
 			}
 		}
 	}
@@ -311,8 +316,8 @@ public class AIEventHandler implements Listener {
 		}
 
 		var player = (Player) holder;
-		var playerData = PlayerData.FromPlayer(player);
-		sortPlayerIfEnabled(player, playerData, bottomInventory);
+		var playerConfig = PlayerConfig.FromPlayer(player);
+		sortPlayerIfEnabled(player, playerConfig, bottomInventory);
 
 		if (!player.isSneaking() && featureEnabled(Features.SortChests, player)) {
 			var topInventory = event.getView().getTopInventory();
@@ -323,9 +328,9 @@ public class AIEventHandler implements Listener {
 			var sorter = new InventorySorter(topInventory, 0);
 			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(AutomaticInventory.instance, sorter, 1L);
 
-			if (!playerData.isGotChestSortInfo()) {
+			if (!playerConfig.isGotChestSortInfo()) {
 				Chat.sendMessage(player, TextMode.Info, Messages.ChestSortEducation3);
-				playerData.setGotChestSortInfo(true);
+				playerConfig.setGotChestSortInfo(true);
 			}
 		}
 	}
@@ -346,15 +351,15 @@ public class AIEventHandler implements Listener {
 		}
 
 		var player = (Player) holder;
-		var playerData = PlayerData.FromPlayer(player);
+		var playerConfig = PlayerConfig.FromPlayer(player);
 
-		sortPlayerIfEnabled(player, playerData, bottomInventory);
+		sortPlayerIfEnabled(player, playerConfig, bottomInventory);
 
-		if (player.getGameMode() != GameMode.CREATIVE && Math.random() < .1 && !playerData.isGotDepositAllInfo() && featureEnabled(Features.DepositAll, player)) {
+		if (player.getGameMode() != GameMode.CREATIVE && Math.random() < .1 && !playerConfig.isGotDepositAllInfo() && featureEnabled(Features.DepositAll, player)) {
 			var topInventory = event.getView().getTopInventory();
 			if (topInventory != null && topInventory.getType() == InventoryType.CHEST) {
 				Chat.sendMessage(player, TextMode.Instr, Messages.DepositAllAdvertisement);
-				playerData.setGotDepositAllInfo(true);
+				playerConfig.setGotDepositAllInfo(true);
 			}
 		}
 	}
@@ -363,8 +368,8 @@ public class AIEventHandler implements Listener {
 	public void onPickupItem(PlayerPickupItemEvent event) {
 		var player = event.getPlayer();
 		if (featureEnabled(Features.SortInventory, player)) {
-			var playerData = PlayerData.FromPlayer(player);
-			if (playerData.firstEmptySlot >= 0) {
+			var playerConfig = PlayerConfig.FromPlayer(player);
+			if (playerConfig.firstEmptySlot >= 0) {
 				return;
 			}
 
@@ -373,24 +378,24 @@ public class AIEventHandler implements Listener {
 			if (firstEmpty < 9) {
 				return;
 			}
-			playerData.firstEmptySlot = firstEmpty;
-			var task = new PickupSortTask(player, playerData, inventory);
+			playerConfig.firstEmptySlot = firstEmpty;
+			var task = new PickupSortTask(player, playerConfig, inventory);
 			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(AutomaticInventory.instance, task, 10L);
 		}
 	}
 
-	static void sortPlayerIfEnabled(Player player, PlayerData playerData, Inventory inventory) {
+	static void sortPlayerIfEnabled(Player player, PlayerConfig playerConfig, Inventory inventory) {
 		if (featureEnabled(Features.SortInventory, player)) {
 			new InventorySorter(inventory, 9).run();
 
-			if (!playerData.isGotInventorySortInfo()) {
+			if (!playerConfig.isGotInventorySortInfo()) {
 				Chat.sendMessage(player, TextMode.Info, Messages.InventorySortEducation);
-				playerData.setGotInventorySortInfo(true);
+				playerConfig.setGotInventorySortInfo(true);
 			}
 		}
 	}
 
-	static boolean isSortableChestInventory(Inventory inventory, String name) {
+	public static boolean isSortableChestInventory(Inventory inventory, String name) {
 		if (inventory == null) {
 			return false;
 		}
@@ -418,37 +423,37 @@ public class AIEventHandler implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	void onPlayerJoin(PlayerJoinEvent event) {
 		var player = event.getPlayer();
-		PlayerData.Preload(player);
+		PlayerConfig.Preload(player);
 	}
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	void onPlayerQuit(PlayerQuitEvent event) {
 		var player = event.getPlayer();
-		PlayerData.FromPlayer(player).saveChanges();
+		PlayerConfig.FromPlayer(player).saveChanges();
 	}
 }
 
 class PickupSortTask implements Runnable {
 	private Player player;
-	private PlayerData playerData;
+	private PlayerConfig playerConfig;
 	private Inventory playerInventory;
 
-	PickupSortTask(Player player, PlayerData playerData, Inventory playerInventory) {
+	PickupSortTask(Player player, PlayerConfig playerConfig, Inventory playerInventory) {
 		this.player = player;
-		this.playerData = playerData;
+		this.playerConfig = playerConfig;
 		this.playerInventory = playerInventory;
 	}
 
 	@Override
 	public void run() {
-		if (this.playerData.firstEmptySlot == playerInventory.firstEmpty()) {
-			this.playerData.firstEmptySlot = -1;
+		if (this.playerConfig.firstEmptySlot == playerInventory.firstEmpty()) {
+			this.playerConfig.firstEmptySlot = -1;
 			return;
 		}
 
-		AIEventHandler.sortPlayerIfEnabled(this.player, this.playerData, this.playerInventory);
+		AutomaticInventoryListener.sortPlayerIfEnabled(this.player, this.playerConfig, this.playerInventory);
 
-		this.playerData.firstEmptySlot = -1;
+		this.playerConfig.firstEmptySlot = -1;
 	}
 }
 

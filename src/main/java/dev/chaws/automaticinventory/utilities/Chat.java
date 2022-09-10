@@ -1,7 +1,7 @@
 package dev.chaws.automaticinventory.utilities;
 
 import dev.chaws.automaticinventory.AutomaticInventory;
-import dev.chaws.automaticinventory.Messages;
+import dev.chaws.automaticinventory.messaging.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -11,7 +11,7 @@ public class Chat {
 	}
 
 	public static void sendMessage(Player player, ChatColor color, Messages messageID, long delayInTicks, String... args) {
-		var message = AutomaticInventory.instance.dataStore.getMessage(messageID, args);
+		var message = AutomaticInventory.instance.localizedMessages.getMessage(messageID, args);
 		sendMessage(player, color, message, delayInTicks);
 	}
 
@@ -21,7 +21,7 @@ public class Chat {
 		}
 
 		if (player == null) {
-			AutomaticInventory.AddLogEntry(color + message);
+			AutomaticInventory.log.info(color + message);
 		} else {
 			player.sendMessage(color + message);
 		}
@@ -53,7 +53,7 @@ class SendPlayerMessageTask implements Runnable {
 	@Override
 	public void run() {
 		if (player == null) {
-			AutomaticInventory.AddLogEntry(color + message);
+			AutomaticInventory.log.info(color + message);
 			return;
 		}
 

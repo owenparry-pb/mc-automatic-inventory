@@ -16,11 +16,11 @@ public enum MaterialColorTag {
 	SHULKER_BOX;
 
 	MaterialColorTag() {
-		for (Material material : Material.values()) {
+		for (var material : Material.values()) {
             if (material.name().equals(this.name())) {
                 materials.add(material);
             } else {
-                for (DyeColor color : DyeColor.values()) {
+                for (var color : DyeColor.values()) {
                     if (material.name().equals(color.name() + "_" + this.name())) {
                         materials.add(material);
                     }
@@ -29,7 +29,7 @@ public enum MaterialColorTag {
 		}
 	}
 
-	private Set<Material> materials = new HashSet<>();
+	private final Set<Material> materials = new HashSet<>();
 
 	public boolean isTagged(Material material) {
 		return materials.contains(material);
