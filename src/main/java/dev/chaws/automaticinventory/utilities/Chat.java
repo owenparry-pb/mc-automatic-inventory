@@ -16,7 +16,9 @@ public class Chat {
 	}
 
 	public static void sendMessage(Player player, ChatColor color, String message) {
-		if (message == null || message.length() == 0) return;
+		if (message == null || message.length() == 0) {
+			return;
+		}
 
 		if (player == null) {
 			AutomaticInventory.AddLogEntry(color + message);
@@ -38,9 +40,9 @@ public class Chat {
 //sends a message to a player
 //used to send delayed messages, for example help text triggered by a player's chat
 class SendPlayerMessageTask implements Runnable {
-	private Player player;
-	private ChatColor color;
-	private String message;
+	private final Player player;
+	private final ChatColor color;
+	private final String message;
 
 	public SendPlayerMessageTask(Player player, ChatColor color, String message) {
 		this.player = player;
