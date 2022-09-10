@@ -1,18 +1,19 @@
 package dev.chaws.automaticinventory.commands;
 
-import dev.chaws.automaticinventory.*;
+import dev.chaws.automaticinventory.configuration.Features;
 import dev.chaws.automaticinventory.configuration.PlayerConfig;
-import dev.chaws.automaticinventory.listeners.AutomaticInventoryListener;
 import dev.chaws.automaticinventory.messaging.Messages;
-import dev.chaws.automaticinventory.utilities.*;
+import dev.chaws.automaticinventory.tasks.AsyncChestDepositTask;
+import dev.chaws.automaticinventory.utilities.Chat;
+import dev.chaws.automaticinventory.utilities.Level;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.entity.Player;
 
 public class DepositAllCommand implements IAutomaticInventoryCommand {
 	public boolean execute(Player player, PlayerConfig playerConfig, String[] args) {
 		//ensure player has feature enabled
-		if (!AutomaticInventoryListener.featureEnabled(Features.DepositAll, player)) {
-			Chat.sendMessage(player, TextMode.Err, Messages.NoPermissionForFeature);
+		if (!PlayerConfig.featureEnabled(Features.DepositAll, player)) {
+			Chat.sendMessage(player, Level.Error, Messages.NoPermissionForFeature);
 			return true;
 		}
 
@@ -34,7 +35,7 @@ public class DepositAllCommand implements IAutomaticInventoryCommand {
 		var startY = player.getEyeLocation().getBlockY();
 		var startX = player.getEyeLocation().getBlockX();
 		var startZ = player.getEyeLocation().getBlockZ();
-		Thread thread = new FindChestsThread(world, snapshots, minY, maxY, startX, startY, startZ, player);
+		Thread thread = new AsyncChestDepositTask(world, snapshots, minY, maxY, startX, startY, startZ, player);
 		thread.setPriority(Thread.MIN_PRIORITY);
 		thread.start();
 

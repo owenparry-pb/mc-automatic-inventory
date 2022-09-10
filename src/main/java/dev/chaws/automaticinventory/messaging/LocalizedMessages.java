@@ -1,4 +1,3 @@
-//Copyright 2015 Ryan Hamshire
 package dev.chaws.automaticinventory.messaging;
 
 import java.io.File;
@@ -6,7 +5,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import dev.chaws.automaticinventory.AutomaticInventory;
-import dev.chaws.automaticinventory.CustomizableMessage;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 

@@ -1,5 +1,3 @@
-//Copyright 2015 Ryan Hamshire
-
 package dev.chaws.automaticinventory.configuration;
 
 import java.io.File;
@@ -100,6 +98,22 @@ public class PlayerConfig {
 	public int firstEmptySlot = -1;
 
 	private boolean isDirty = false;
+
+	public static boolean featureEnabled(Features feature, Player player) {
+		if (!AutomaticInventory.hasPermission(feature, player)) {
+			return false;
+		}
+
+		var playerConfig = PlayerConfig.FromPlayer(player);
+
+		return switch (feature) {
+			case SortInventory -> playerConfig.isSortInventory();
+			case SortChests -> playerConfig.isSortChests();
+			case QuickDeposit -> playerConfig.isQuickDepositEnabled();
+			case RefillStacks -> playerConfig.isAutoRefillEnabled();
+			case DepositAll -> true;
+		};
+	}
 
 	private boolean sortChests = GlobalConfig.autosortEnabledByDefault;
 

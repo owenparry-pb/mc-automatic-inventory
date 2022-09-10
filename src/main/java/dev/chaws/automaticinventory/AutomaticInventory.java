@@ -1,26 +1,18 @@
-//Copyright 2015 Ryan Hamshire
-
 package dev.chaws.automaticinventory;
 
 import dev.chaws.automaticinventory.commands.*;
+import dev.chaws.automaticinventory.common.DepositRecord;
 import dev.chaws.automaticinventory.configuration.*;
 import dev.chaws.automaticinventory.listeners.*;
 import dev.chaws.automaticinventory.messaging.*;
 import dev.chaws.automaticinventory.utilities.ItemUtilities;
 import kr.entree.spigradle.annotations.PluginMain;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;

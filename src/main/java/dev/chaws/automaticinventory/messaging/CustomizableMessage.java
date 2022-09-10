@@ -1,6 +1,4 @@
-//Copyright 2015 Ryan Hamshire
-
-package dev.chaws.automaticinventory;
+package dev.chaws.automaticinventory.messaging;
 
 import dev.chaws.automaticinventory.messaging.Messages;
 

@@ -1,12 +1,12 @@
-package dev.chaws.automaticinventory;
+package dev.chaws.automaticinventory.tasks;
 
-import dev.chaws.automaticinventory.configuration.PlayerConfig;
-import dev.chaws.automaticinventory.events.FakePlayerInteractEvent;
-import dev.chaws.automaticinventory.listeners.AutomaticInventoryListener;
-import dev.chaws.automaticinventory.messaging.Messages;
-import dev.chaws.automaticinventory.utilities.BlockUtilities;
-import dev.chaws.automaticinventory.utilities.Chat;
-import dev.chaws.automaticinventory.utilities.TextMode;
+import dev.chaws.automaticinventory.AutomaticInventory;
+import dev.chaws.automaticinventory.common.DepositRecord;
+import dev.chaws.automaticinventory.configuration.*;
+import dev.chaws.automaticinventory.events.*;
+import dev.chaws.automaticinventory.listeners.*;
+import dev.chaws.automaticinventory.messaging.*;
+import dev.chaws.automaticinventory.utilities.*;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -18,7 +18,7 @@ import org.bukkit.util.Vector;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class FindChestsThread extends Thread {
+public class AsyncChestDepositTask extends Thread {
 	private World world;
 	private ChunkSnapshot[][] snapshots;
 	private int minY;
@@ -31,7 +31,7 @@ public class FindChestsThread extends Thread {
 
 	private boolean[][][] seen;
 
-	public FindChestsThread(World world, ChunkSnapshot[][] snapshots, int minY, int maxY, int startX, int startY, int startZ, Player player) {
+	public AsyncChestDepositTask(World world, ChunkSnapshot[][] snapshots, int minY, int maxY, int startX, int startY, int startZ, Player player) {
 		this.world = world;
 		this.snapshots = snapshots;
 		this.minY = minY;
@@ -58,14 +58,14 @@ public class FindChestsThread extends Thread {
 			var current = leftToVisit.remove();
 
 			var type = this.getType(current);
-			if (isChest(type)) {
+			if (MaterialUtilities.isChest(type)) {
 				var overType = this.getType(new Vector(current.getBlockX(), current.getBlockY() + 1, current.getBlockZ()));
 				if (!BlockUtilities.preventsChestOpen(type, overType)) {
 					chestLocations.add(this.makeLocation(current));
 				}
 			}
 
-			if (this.isPassable(type)) {
+			if (MaterialUtilities.isPassable(type)) {
 				var adjacents = new Vector[] {
 					new Vector(current.getBlockX() + 1, current.getBlockY(), current.getBlockZ()),
 					new Vector(current.getBlockX() - 1, current.getBlockY(), current.getBlockZ()),
@@ -105,6 +105,7 @@ public class FindChestsThread extends Thread {
 		var chunk = this.snapshots[chunkx][chunkz];
 		var x = location.getBlockX() % 16;
 		var z = location.getBlockZ() % 16;
+
 		return chunk.getBlockType(x, location.getBlockY(), z);
 	}
 
@@ -143,40 +144,11 @@ public class FindChestsThread extends Thread {
 		return location.getBlockZ() < 0;
 	}
 
-	private boolean isChest(Material material) {
-        if (material == null) {
-            return false;
-        }
-		switch (material) {
-			case CHEST:
-			case TRAPPED_CHEST:
-			case BARREL:
-				return true;
-		}
-		return MaterialColorTag.SHULKER_BOX.isTagged(material);
-	}
-
-	private boolean isPassable(Material material) {
-        if (material == null) {
-            return false;
-        }
-		switch (material) {
-			case AIR:
-			case CHEST:
-			case TRAPPED_CHEST:
-			case HOPPER:
-				return true;
-			default:
-				return Tag.WALL_SIGNS.isTagged(material)
-					|| Tag.SIGNS.isTagged(material);
-		}
-	}
-
-	class QuickDepositChain implements Runnable {
-		private Queue<Location> remainingChestLocations;
-		private DepositRecord runningDepositRecord;
-		private Player player;
-		private boolean respectExclusions;
+	static class QuickDepositChain implements Runnable {
+		private final Queue<Location> remainingChestLocations;
+		private final DepositRecord runningDepositRecord;
+		private final Player player;
+		private final boolean respectExclusions;
 
 		QuickDepositChain(Queue<Location> remainingChestLocations, DepositRecord runningDepositRecord, Player player, boolean respectExclusions) {
 			super();
@@ -190,10 +162,10 @@ public class FindChestsThread extends Thread {
 		public void run() {
 			var chestLocation = this.remainingChestLocations.poll();
 			if (chestLocation == null) {
-				Chat.sendMessage(this.player, TextMode.Success, Messages.SuccessfulDepositAll2, String.valueOf(this.runningDepositRecord.totalItems));
+				Chat.sendMessage(this.player, Level.Success, Messages.SuccessfulDepositAll2, String.valueOf(this.runningDepositRecord.totalItems));
 				var playerConfig = PlayerConfig.FromPlayer(player);
-				if (Math.random() < .1 && !playerConfig.isGotQuickDepositInfo() && AutomaticInventoryListener.featureEnabled(Features.QuickDeposit, player)) {
-					Chat.sendMessage(player, TextMode.Instr, Messages.QuickDepositAdvertisement3);
+				if (Math.random() < .1 && !playerConfig.isGotQuickDepositInfo() && PlayerConfig.featureEnabled(Features.QuickDeposit, player)) {
+					Chat.sendMessage(player, Level.Instr, Messages.QuickDepositAdvertisement3);
 					playerConfig.setGotQuickDepositInfo(true);
 				}
 			} else {
@@ -202,8 +174,7 @@ public class FindChestsThread extends Thread {
 				Bukkit.getServer().getPluginManager().callEvent(fakeEvent);
 				if (!fakeEvent.isCancelled()) {
 					var state = block.getState();
-					if (state instanceof InventoryHolder) {
-						var chest = (InventoryHolder) state;
+					if (state instanceof InventoryHolder chest) {
 						var chestInventory = chest.getInventory();
 						if (!this.respectExclusions || AutomaticInventoryListener.isSortableChestInventory(chestInventory,
 							state instanceof Nameable ? ((Nameable) state).getCustomName() : null)) {

@@ -1,4 +1,4 @@
-package dev.chaws.automaticinventory;
+package dev.chaws.automaticinventory.configuration;
 
 public enum Features {
 	RefillStacks,
