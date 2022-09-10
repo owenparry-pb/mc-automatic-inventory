@@ -2,6 +2,8 @@
 
 package dev.chaws.automaticinventory;
 
+import dev.chaws.automaticinventory.utilities.Chat;
+import dev.chaws.automaticinventory.utilities.TextMode;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -18,23 +20,16 @@ import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-
-import static java.lang.Integer.valueOf;
 
 public class AIEventHandler implements Listener 
 {
@@ -147,7 +142,7 @@ public class AIEventHandler implements Listener
 		}
     }
 	
-	static boolean featureEnabled(Features feature, Player player)
+	public static boolean featureEnabled(Features feature, Player player)
 	{
         if(!AutomaticInventory.hasPermission(feature, player)) return false;
 	    
@@ -243,7 +238,7 @@ public class AIEventHandler implements Listener
             PlayerData playerData = PlayerData.FromPlayer(player); 
             if(!playerData.isGotRestackInfo())
             {
-                AutomaticInventory.sendMessage(player, TextMode.Info, Messages.AutoRefillEducation);
+                Chat.sendMessage(player, TextMode.Info, Messages.AutoRefillEducation);
                 playerData.setGotRestackInfo(true);
             }
         }
@@ -276,7 +271,7 @@ public class AIEventHandler implements Listener
         Material aboveBlockID = clickedBlock.getRelative(BlockFace.UP).getType();
         if(AutomaticInventory.preventsChestOpen(clickedBlock.getType(), aboveBlockID))
         {
-            AutomaticInventory.sendMessage(player, TextMode.Err, Messages.ChestLidBlocked);
+            Chat.sendMessage(player, TextMode.Err, Messages.ChestLidBlocked);
             return;
         }
         
@@ -285,15 +280,15 @@ public class AIEventHandler implements Listener
         //send confirmation message to player with counts deposited.  if none deposited, give instructions on how to set up the chest.
         if(deposits.destinationFull && deposits.totalItems == 0)
         {
-            AutomaticInventory.sendMessage(player, TextMode.Err, Messages.FailedDepositChestFull2);
+            Chat.sendMessage(player, TextMode.Err, Messages.FailedDepositChestFull2);
         }
         else if(deposits.totalItems == 0)
         {
-            AutomaticInventory.sendMessage(player, TextMode.Info, Messages.FailedDepositNoMatch);
+            Chat.sendMessage(player, TextMode.Info, Messages.FailedDepositNoMatch);
         }
         else
         {
-            AutomaticInventory.sendMessage(player, TextMode.Success, Messages.SuccessfulDeposit2, String.valueOf(deposits.totalItems));
+            Chat.sendMessage(player, TextMode.Success, Messages.SuccessfulDeposit2, String.valueOf(deposits.totalItems));
             
             //make a note that quick deposit was used so that player will not be bothered with advertisement messages again.
             PlayerData playerData = PlayerData.FromPlayer(player);
@@ -328,7 +323,7 @@ public class AIEventHandler implements Listener
             
             if(!playerData.isGotChestSortInfo())
             {
-                AutomaticInventory.sendMessage(player, TextMode.Info, Messages.ChestSortEducation3);
+                Chat.sendMessage(player, TextMode.Info, Messages.ChestSortEducation3);
                 playerData.setGotChestSortInfo(true);
             }
         }
@@ -354,7 +349,7 @@ public class AIEventHandler implements Listener
             Inventory topInventory = event.getView().getTopInventory();
             if(topInventory != null && topInventory.getType() == InventoryType.CHEST)
             {
-                AutomaticInventory.sendMessage(player, TextMode.Instr, Messages.DepositAllAdvertisement);
+                Chat.sendMessage(player, TextMode.Instr, Messages.DepositAllAdvertisement);
                 playerData.setGotDepositAllInfo(true);
             }
         }
@@ -386,7 +381,7 @@ public class AIEventHandler implements Listener
             
             if(!playerData.isGotInventorySortInfo())
             {
-                AutomaticInventory.sendMessage(player, TextMode.Info, Messages.InventorySortEducation);
+                Chat.sendMessage(player, TextMode.Info, Messages.InventorySortEducation);
                 playerData.setGotInventorySortInfo(true);
             }
         }

@@ -2,6 +2,8 @@
 
 package dev.chaws.automaticinventory;
 
+import dev.chaws.automaticinventory.commands.*;
+import dev.chaws.automaticinventory.utilities.*;
 import kr.entree.spigradle.annotations.PluginMain;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.*;
@@ -153,203 +155,27 @@ public class AutomaticInventory extends JavaPlugin
 			player = (Player) sender;
 			playerData = PlayerData.FromPlayer(player);
 		}
-		
-		if(cmd.getName().equalsIgnoreCase("debugai") && player != null)
-		{
-		    PlayerInventory inventory = player.getInventory();
-		    inventory.getItemInMainHand().setDurability(Short.MAX_VALUE);
-		    /*
-		    for(int i = 0; i < inventory.getSize(); i++)
-		    {
-		        ItemStack stack = inventory.getItem(i);
-		        if(stack != null)
-		        AutomaticInventory.AddLogEntry(String.valueOf(i) + " : " + stack.getType().name());
-		    }*/
-		    
-		    return true;
+
+		if (cmd.getName().equalsIgnoreCase("debugai") && player != null) {
+		    return new DebugCommand().execute(player, playerData, args);
 		}
-		
-		else if(cmd.getName().equalsIgnoreCase("autosort") && player != null)
-        {
-		    if(args.length < 1)
-		    {
-		        sendMessage(player, TextMode.Instr, Messages.AutoSortHelp);
-		        return true;
-		    }
-		    
-		    String optionName = args[0].toLowerCase();
-		    if(optionName.startsWith("chest"))
-		    {
-		        if(!hasPermission(Features.SortChests, player))
-		        {
-		            sendMessage(player, TextMode.Err, Messages.NoPermissionForFeature);
-		            return true;
-		        }
-		        
-		        playerData.setSortChests(!playerData.isSortChests());
-		        
-		        if(playerData.isSortChests())
-		            sendMessage(player, TextMode.Success, Messages.ChestSortEnabled);
-		        else
-		            sendMessage(player, TextMode.Success, Messages.ChestSortDisabled);
-		    }
-		    else if(optionName.startsWith("inv"))
-		    {
-		        if(!hasPermission(Features.SortInventory, player))
-                {
-                    sendMessage(player, TextMode.Err, Messages.NoPermissionForFeature);
-                    return true;
-                }
-		        
-		        playerData.setSortInventory(!playerData.isSortInventory());
-		        
-		        if(playerData.isSortInventory())
-                    sendMessage(player, TextMode.Success, Messages.InventorySortEnabled);
-                else
-                    sendMessage(player, TextMode.Success, Messages.InventorySortDisabled);
-		    }
-		    else
-		    {
-		        sendMessage(player, TextMode.Err, Messages.AutoSortHelp);
-                return true;
-		    }
-		    
-		    DeliverTutorialHyperlink(player);
-		    
-		    return true;
+		else if (cmd.getName().equalsIgnoreCase("autosort") && player != null) {
+		    return new AutoSortCommand().execute(player, playerData, args);
         }
-		
-		else if(cmd.getName().equalsIgnoreCase("depositall") && player != null)
-        {
-		    //ensure player has feature enabled
-		    if(!AIEventHandler.featureEnabled(Features.DepositAll, player))
-		    {
-		        AutomaticInventory.sendMessage(player, TextMode.Err, Messages.NoPermissionForFeature);
-		        return true;
-		    }
-		    
-		    //gather snapshots of adjacent chunks
-		    Location location = player.getLocation();
-		    Chunk centerChunk = location.getChunk();
-		    World world = location.getWorld();
-		    ChunkSnapshot [][] snapshots = new ChunkSnapshot[3][3];
-		    for(int x = -1; x <= 1; x++)
-		    {
-		        for(int z = -1; z <= 1; z++)
-		        {
-		            Chunk chunk = world.getChunkAt(centerChunk.getX() + x, centerChunk.getZ() + z);
-		            snapshots[x + 1][z + 1] = chunk.getChunkSnapshot(); 
-		        }
-		    }
-		    
-		    //create a thread to search those snapshots and create a chain of quick deposit attempts
-		    int minY = Math.max(0, player.getEyeLocation().getBlockY() - 10);
-		    int maxY = Math.min(world.getMaxHeight(), player.getEyeLocation().getBlockY() + 10);
-		    int startY = player.getEyeLocation().getBlockY();
-		    int startX = player.getEyeLocation().getBlockX();
-		    int startZ = player.getEyeLocation().getBlockZ();
-		    Thread thread = new FindChestsThread(world, snapshots, minY, maxY, startX, startY, startZ, player);
-		    thread.setPriority(Thread.MIN_PRIORITY);
-		    thread.start();
-		    
-		    playerData.setUsedDepositAll(true);
-		    return true;
+		else if (cmd.getName().equalsIgnoreCase("depositall") && player != null) {
+			return new DepositAllCommand().execute(player, playerData, args);
         }
-
-		else if(cmd.getName().equalsIgnoreCase("quickdeposit") && player != null)
-		{
-			if(!hasPermission(Features.QuickDeposit, player))
-			{
-				sendMessage(player, TextMode.Err, Messages.NoPermissionForFeature);
-				return true;
-			}
-
-			if(args.length < 1)
-			{
-				sendMessage(player, TextMode.Instr, Messages.QuickDepositHelp);
-				return true;
-			}
-
-			String optionName = args[0].toLowerCase();
-			if(optionName.startsWith("toggle"))
-			{
-				playerData.setQuickDepositEnabled(!playerData.isQuickDepositEnabled());
-
-				if(playerData.isQuickDepositEnabled())
-					sendMessage(player, TextMode.Success, Messages.QuickDepositEnabled);
-				else
-					sendMessage(player, TextMode.Success, Messages.QuickDepositDisabled);
-			}
-			else if(optionName.startsWith("enable"))
-			{
-				playerData.setQuickDepositEnabled(true);
-				sendMessage(player, TextMode.Success, Messages.QuickDepositEnabled);
-			}
-			else if(optionName.startsWith("disable"))
-			{
-				playerData.setQuickDepositEnabled(false);
-				sendMessage(player, TextMode.Success, Messages.QuickDepositDisabled);
-			}
-			else
-			{
-				sendMessage(player, TextMode.Err, Messages.QuickDepositHelp);
-				return true;
-			}
-
-			DeliverTutorialHyperlink(player);
-
-			return true;
+		else if (cmd.getName().equalsIgnoreCase("quickdeposit") && player != null) {
+			return new QuickDepositCommand().execute(player, playerData, args);
 		}
-
-		else if(cmd.getName().equalsIgnoreCase("autorefill") && player != null)
-		{
-			if(!hasPermission(Features.RefillStacks, player))
-			{
-				sendMessage(player, TextMode.Err, Messages.NoPermissionForFeature);
-				return true;
-			}
-
-			if(args.length < 1)
-			{
-				sendMessage(player, TextMode.Instr, Messages.AutoRefillHelp);
-				return true;
-			}
-
-			String optionName = args[0].toLowerCase();
-			if(optionName.startsWith("toggle"))
-			{
-				playerData.setAutoRefillEnabled(!playerData.isAutoRefillEnabled());
-
-				if(playerData.isAutoRefillEnabled())
-					sendMessage(player, TextMode.Success, Messages.AutoRefillEnabled);
-				else
-					sendMessage(player, TextMode.Success, Messages.AutoRefillDisabled);
-			}
-			else if(optionName.startsWith("enable"))
-			{
-				playerData.setAutoRefillEnabled(true);
-				sendMessage(player, TextMode.Success, Messages.AutoRefillEnabled);
-			}
-			else if(optionName.startsWith("disable"))
-			{
-				playerData.setAutoRefillEnabled(false);
-				sendMessage(player, TextMode.Success, Messages.AutoRefillDisabled);
-			}
-			else
-			{
-				sendMessage(player, TextMode.Err, Messages.AutoRefillHelp);
-				return true;
-			}
-
-			DeliverTutorialHyperlink(player);
-
-			return true;
+		else if (cmd.getName().equalsIgnoreCase("autorefill") && player != null) {
+			return new AutoRefillCommand().execute(player, playerData, args);
 		}
 
 		return false;
 	}
 
-    void DeliverTutorialHyperlink(Player player)
+    public void DeliverTutorialHyperlink(Player player)
     {
         //todo: deliver tutorial link to player
     }
@@ -366,7 +192,7 @@ public class AutomaticInventory extends JavaPlugin
         AddLogEntry("AutomaticInventory disabled.");
 	}
 	
-    static boolean hasPermission(Features feature, Player player)
+    public static boolean hasPermission(Features feature, Player player)
     {
         boolean hasPermission = false;
         switch(feature)
@@ -389,56 +215,6 @@ public class AutomaticInventory extends JavaPlugin
         }
         
         return hasPermission;
-    }
-    
-    private static void sendMessage(Player player, String message)
-	{
-		if(player != null)
-		{
-			player.sendMessage(message);
-		}
-		else
-		{
-			AutomaticInventory.AddLogEntry(message);
-		}
-	}
-	
-    static void sendMessage(Player player, ChatColor color, Messages messageID, String... args)
-    {
-        sendMessage(player, color, messageID, 0, args);
-    }
-    
-    static void sendMessage(Player player, ChatColor color, Messages messageID, long delayInTicks, String... args)
-    {
-        String message = AutomaticInventory.instance.dataStore.getMessage(messageID, args);
-        sendMessage(player, color, message, delayInTicks);
-    }
-    
-    static void sendMessage(Player player, ChatColor color, String message)
-    {
-        if(message == null || message.length() == 0) return;
-        
-        if(player == null)
-        {
-            AutomaticInventory.AddLogEntry(color + message);
-        }
-        else
-        {
-            player.sendMessage(color + message);
-        }
-    }
-    
-    static void sendMessage(Player player, ChatColor color, String message, long delayInTicks)
-    {
-        SendPlayerMessageTask task = new SendPlayerMessageTask(player, color, message);
-        if(delayInTicks > 0)
-        {
-            AutomaticInventory.instance.getServer().getScheduler().runTaskLater(AutomaticInventory.instance, task, delayInTicks);
-        }
-        else
-        {
-            task.run();
-        }
     }
 
     static DepositRecord depositMatching(PlayerInventory source, Inventory destination, boolean depositHotbar)

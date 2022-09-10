@@ -1,10 +1,11 @@
 package dev.chaws.automaticinventory;
 
+import dev.chaws.automaticinventory.utilities.Chat;
+import dev.chaws.automaticinventory.utilities.TextMode;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -189,11 +190,11 @@ public class FindChestsThread extends Thread
             Location chestLocation = this.remainingChestLocations.poll();
             if(chestLocation == null)
             {
-                AutomaticInventory.sendMessage(this.player, TextMode.Success, Messages.SuccessfulDepositAll2, String.valueOf(this.runningDepositRecord.totalItems));
+                Chat.sendMessage(this.player, TextMode.Success, Messages.SuccessfulDepositAll2, String.valueOf(this.runningDepositRecord.totalItems));
                 PlayerData playerData = PlayerData.FromPlayer(player);
                 if(Math.random() < .1 && !playerData.isGotQuickDepositInfo() && AIEventHandler.featureEnabled(Features.QuickDeposit, player))
                 {
-                    AutomaticInventory.sendMessage(player, TextMode.Instr, Messages.QuickDepositAdvertisement3);
+                    Chat.sendMessage(player, TextMode.Instr, Messages.QuickDepositAdvertisement3);
                     playerData.setGotQuickDepositInfo(true);
                 }
             }

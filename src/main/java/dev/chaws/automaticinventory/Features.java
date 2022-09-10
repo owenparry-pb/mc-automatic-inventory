@@ -1,6 +1,6 @@
 package dev.chaws.automaticinventory;
 
-enum Features
+public enum Features
 {
     RefillStacks,
     SortInventory,

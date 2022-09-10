@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
-class PlayerData 
+public class PlayerData
 {
     private final static String METADATA_TAG = "AI_PlayerData";
     private Thread loadingThread;
@@ -45,40 +45,40 @@ class PlayerData
         return usedDepositAll;
     }
 
-    void setUsedDepositAll(boolean usedDepositAll)
+    public void setUsedDepositAll(boolean usedDepositAll)
     {
         this.usedDepositAll = usedDepositAll;
         this.isDirty = true;
     }
 
-    boolean isGotChestSortInfo()
+    public boolean isGotChestSortInfo()
     {
         return gotChestSortInfo;
     }
 
-    void setGotChestSortInfo(boolean gotChestSortInfo)
+    public void setGotChestSortInfo(boolean gotChestSortInfo)
     {
         this.gotChestSortInfo = gotChestSortInfo;
         this.isDirty = true;
     }
 
-    boolean isGotInventorySortInfo()
+    public boolean isGotInventorySortInfo()
     {
         return gotInventorySortInfo;
     }
 
-    void setGotInventorySortInfo(boolean gotInventorySortInfo)
+    public void setGotInventorySortInfo(boolean gotInventorySortInfo)
     {
         this.gotInventorySortInfo = gotInventorySortInfo;
         this.isDirty = true;
     }
 
-    boolean isGotRestackInfo()
+    public boolean isGotRestackInfo()
     {
         return gotRestackInfo;
     }
 
-    void setGotRestackInfo(boolean gotRestackInfo)
+    public void setGotRestackInfo(boolean gotRestackInfo)
     {        
         this.gotRestackInfo = gotRestackInfo;
         this.isDirty = true;
@@ -90,8 +90,8 @@ class PlayerData
     {
         new PlayerData(player);
     }
-    
-    static PlayerData FromPlayer(Player player)
+
+    public static PlayerData FromPlayer(Player player)
     {
         List<MetadataValue> data = player.getMetadata(METADATA_TAG);
         if(data == null || data.isEmpty())
@@ -119,75 +119,75 @@ class PlayerData
     private boolean isDirty = false;
     
     private boolean sortChests = AutomaticInventory.autosortEnabledByDefault;
-    boolean isSortChests()
+    public boolean isSortChests()
     {
         this.waitForLoadComplete();
         return sortChests;
     }
-    void setSortChests(boolean sortChests)
+    public void setSortChests(boolean sortChests)
     {
         this.isDirty = true;
         this.sortChests = sortChests;
     }
 
     private boolean sortInventory = AutomaticInventory.autosortEnabledByDefault;
-    
-    boolean isSortInventory()
+
+    public boolean isSortInventory()
     {
         this.waitForLoadComplete();
         return sortInventory;
     }
-    void setSortInventory(boolean sortInventory)
+    public void setSortInventory(boolean sortInventory)
     {
         this.isDirty = true;
         this.sortInventory = sortInventory;
     }
 
     private boolean quickDepositEnabled = AutomaticInventory.quickDepositEnabledByDefault;
-    boolean isQuickDepositEnabled()
+    public boolean isQuickDepositEnabled()
     {
         this.waitForLoadComplete();
         return quickDepositEnabled;
     }
-    void setQuickDepositEnabled(boolean quickDepositEnabled)
+    public void setQuickDepositEnabled(boolean quickDepositEnabled)
     {
         this.isDirty = true;
         this.quickDepositEnabled = quickDepositEnabled;
     }
 
     private boolean autoRefillEnabled = AutomaticInventory.autoRefillEnabledByDefault;
-    boolean isAutoRefillEnabled()
+    public boolean isAutoRefillEnabled()
     {
         this.waitForLoadComplete();
         return autoRefillEnabled;
     }
-    void setAutoRefillEnabled(boolean autoRefillEnabled)
+    public void setAutoRefillEnabled(boolean autoRefillEnabled)
     {
         this.isDirty = true;
         this.autoRefillEnabled = autoRefillEnabled;
     }
 
-    void incrementManualDeposits()
+    public void incrementManualDeposits()
     {
         this.manualDepositsThisSession++;
     }
-    
-    int getManualDeposits()
+
+    public int getManualDeposits()
     {
         return this.manualDepositsThisSession;
     }
-    
-    boolean isGotQuickDepositInfo()
+
+    public boolean isGotQuickDepositInfo()
     {
         return gotQuickDepositInfo;
     }
 
-    void setGotQuickDepositInfo(boolean newValue) 
+    public void setGotQuickDepositInfo(boolean newValue)
     {
         this.gotQuickDepositInfo = newValue;
     }
 
-    void saveChanges()
+    public void saveChanges()
     {
         if(!this.isDirty) return;
         
@@ -321,7 +321,7 @@ class PlayerData
         }
     }
 
-    boolean isGotDepositAllInfo()
+    public boolean isGotDepositAllInfo()
     {
         return this.gotDepositAllInfo;
     }
