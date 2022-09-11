@@ -10,6 +10,7 @@ import dev.chaws.automaticinventory.utilities.*;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
@@ -168,28 +169,36 @@ public class AsyncChestDepositTask extends Thread {
 					Chat.sendMessage(player, Level.Instr, Messages.QuickDepositAdvertisement3);
 					playerConfig.setGotQuickDepositInfo(true);
 				}
-			} else {
-				var block = chestLocation.getBlock();
-				PlayerInteractEvent fakeEvent = new FakePlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, player.getInventory().getItemInMainHand(), block, BlockFace.UP);
-				Bukkit.getServer().getPluginManager().callEvent(fakeEvent);
-				if (!fakeEvent.isCancelled()) {
-					var state = block.getState();
-					if (state instanceof InventoryHolder chest) {
-						var chestInventory = chest.getInventory();
-						if (!this.respectExclusions || AutomaticInventoryListener.isSortableChestInventory(chestInventory,
-							state instanceof Nameable ? ((Nameable) state).getCustomName() : null)) {
-							var playerInventory = player.getInventory();
 
-							var deposits = AutomaticInventory.depositMatching(playerInventory, chestInventory, false);
+				return;
+			}
 
-							this.runningDepositRecord.totalItems += deposits.totalItems;
-						}
+			var block = chestLocation.getBlock();
+			var event = new PlayerInteractEvent(player,
+				Action.RIGHT_CLICK_BLOCK,
+				player.getInventory().getItemInMainHand(),
+				block,
+				BlockFace.UP
+			);
+
+			Bukkit.getServer().getPluginManager().callEvent(event);
+			if (event.useInteractedBlock() != Event.Result.DENY) {
+				var state = block.getState();
+				if (state instanceof InventoryHolder chest) {
+					var chestInventory = chest.getInventory();
+					if (!this.respectExclusions || AutomaticInventoryListener.isSortableChestInventory(chestInventory,
+						state instanceof Nameable nameable ? nameable.getCustomName() : null)) {
+						var playerInventory = player.getInventory();
+
+						var deposits = AutomaticInventory.depositMatching(playerInventory, chestInventory, false);
+
+						this.runningDepositRecord.totalItems += deposits.totalItems;
 					}
 				}
-
-				var chain = new QuickDepositChain(this.remainingChestLocations, this.runningDepositRecord, this.player, this.respectExclusions);
-				Bukkit.getScheduler().runTaskLater(AutomaticInventory.instance, chain, 1L);
 			}
+
+			var chain = new QuickDepositChain(this.remainingChestLocations, this.runningDepositRecord, this.player, this.respectExclusions);
+			Bukkit.getScheduler().runTaskLater(AutomaticInventory.instance, chain, 1L);
 		}
 	}
 }

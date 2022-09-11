@@ -42,6 +42,14 @@ jobs:
           chmod +x gradlew
           ./gradlew build --stacktrace
 
+      - name: Install rename
+        run: sudo apt-get install -y rename
+
+      - name: Rename file
+        run: |
+          cd ./build/libs/
+          rename -f 's/-all//;' '' *
+
       - name: Archive plugin jars on GitHub
         uses: actions/upload-artifact@v3
         with:
