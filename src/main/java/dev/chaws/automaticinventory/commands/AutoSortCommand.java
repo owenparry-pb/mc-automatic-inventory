@@ -29,6 +29,8 @@ public class AutoSortCommand implements IAutomaticInventoryCommand {
 			} else {
 				Chat.sendMessage(player, Level.Success, Messages.ChestSortDisabled);
 			}
+
+			return true;
 		} else if (optionName.startsWith("inv")) {
 			if (!AutomaticInventory.hasPermission(Features.SortInventory, player)) {
 				Chat.sendMessage(player, Level.Error, Messages.NoPermissionForFeature);
@@ -42,13 +44,11 @@ public class AutoSortCommand implements IAutomaticInventoryCommand {
 			} else {
 				Chat.sendMessage(player, Level.Success, Messages.InventorySortDisabled);
 			}
+
+			return true;
 		} else {
 			Chat.sendMessage(player, Level.Error, Messages.AutoSortHelp);
-			return true;
+			return false;
 		}
-
-		AutomaticInventory.instance.DeliverTutorialHyperlink(player);
-
-		return true;
 	}
 }

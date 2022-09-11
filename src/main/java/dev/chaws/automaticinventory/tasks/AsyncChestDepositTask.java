@@ -186,11 +186,11 @@ public class AsyncChestDepositTask extends Thread {
 				var state = block.getState();
 				if (state instanceof InventoryHolder chest) {
 					var chestInventory = chest.getInventory();
-					if (!this.respectExclusions || AutomaticInventoryListener.isSortableChestInventory(chestInventory,
+					if (!this.respectExclusions || InventoryUtilities.isSortableChestInventory(chestInventory,
 						state instanceof Nameable nameable ? nameable.getCustomName() : null)) {
 						var playerInventory = player.getInventory();
 
-						var deposits = AutomaticInventory.depositMatching(playerInventory, chestInventory, false);
+						var deposits = InventoryUtilities.depositMatching(playerInventory, chestInventory, false);
 
 						this.runningDepositRecord.totalItems += deposits.totalItems;
 					}

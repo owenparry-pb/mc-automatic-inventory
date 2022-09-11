@@ -1,7 +1,7 @@
 package dev.chaws.automaticinventory.tasks;
 
 import dev.chaws.automaticinventory.configuration.PlayerConfig;
-import dev.chaws.automaticinventory.listeners.AutomaticInventoryListener;
+import dev.chaws.automaticinventory.listeners.SortInventoryListener;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
@@ -23,7 +23,7 @@ public class PickupSortTask implements Runnable {
 			return;
 		}
 
-		AutomaticInventoryListener.sortPlayerIfEnabled(this.player, this.playerConfig, this.playerInventory);
+		SortInventoryListener.sortPlayerIfEnabled(this.player, this.playerConfig, this.playerInventory);
 
 		this.playerConfig.firstEmptySlot = -1;
 	}

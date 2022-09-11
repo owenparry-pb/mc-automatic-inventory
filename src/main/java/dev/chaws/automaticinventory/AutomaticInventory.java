@@ -35,15 +35,17 @@ public class AutomaticInventory extends JavaPlugin {
 		GlobalConfig.Initialize(this.getDataFolder());
 		this.localizedMessages = new LocalizedMessages();
 
-		//register for events
-		var pluginManager = this.getServer().getPluginManager();
-
-		var aIEventHandler = new AutomaticInventoryListener();
-		pluginManager.registerEvents(aIEventHandler, this);
-
 		for (Player player : this.getServer().getOnlinePlayers()) {
 			PlayerConfig.Preload(player);
 		}
+
+		var pluginManager = this.getServer().getPluginManager();
+		pluginManager.registerEvents(new ConfigurationListener(), this);
+		pluginManager.registerEvents(new DepositAllAdvertisementListener(), this);
+		pluginManager.registerEvents(new QuickDepositListener(), this);
+		pluginManager.registerEvents(new RefillStacksListener(), this);
+		pluginManager.registerEvents(new SortChestsListener(), this);
+		pluginManager.registerEvents(new SortInventoryListener(), this);
 
 		try {
 			new Metrics(this, 3547);
@@ -74,10 +76,6 @@ public class AutomaticInventory extends JavaPlugin {
 		return false;
 	}
 
-	public void DeliverTutorialHyperlink(Player player) {
-		//todo: deliver tutorial link to player
-	}
-
 	public void onDisable() {
 		for (Player player : this.getServer().getOnlinePlayers()) {
 			var data = PlayerConfig.FromPlayer(player);
@@ -89,81 +87,12 @@ public class AutomaticInventory extends JavaPlugin {
 	}
 
 	public static boolean hasPermission(Features feature, Player player) {
-		var hasPermission = false;
-		switch (feature) {
-			case SortInventory:
-				hasPermission = player.hasPermission("automaticinventory.sortinventory");
-				break;
-			case SortChests:
-				hasPermission = player.hasPermission("automaticinventory.sortchests");
-				break;
-			case RefillStacks:
-				hasPermission = player.hasPermission("automaticinventory.refillstacks");
-				break;
-			case QuickDeposit:
-				hasPermission = player.hasPermission("automaticinventory.quickdeposit");
-				break;
-			case DepositAll:
-				hasPermission = player.hasPermission("automaticinventory.depositall");
-				break;
-		}
-
-		return hasPermission;
-	}
-
-	public static DepositRecord depositMatching(PlayerInventory source, Inventory destination, boolean depositHotbar) {
-		var eligibleSignatures = new HashSet<String>();
-		var deposits = new DepositRecord();
-		for (var i = 0; i < destination.getSize(); i++) {
-			var destinationStack = destination.getItem(i);
-			if (destinationStack == null) {
-				continue;
-			}
-
-			var signature = ItemUtilities.getSignature(destinationStack);
-			eligibleSignatures.add(signature);
-		}
-		var sourceStartIndex = depositHotbar ? 0 : 9;
-		var sourceSize = Math.min(source.getSize(), 36);
-		for (var i = sourceStartIndex; i < sourceSize; i++) {
-			var sourceStack = source.getItem(i);
-			if (sourceStack == null) {
-				continue;
-			}
-
-			if (GlobalConfig.instance.isItemExcludedViaName(sourceStack)) {
-				continue;
-			}
-
-			if (GlobalConfig.instance.config_noAutoDeposit.contains(sourceStack.getType())) {
-				continue;
-			}
-
-			var signature = ItemUtilities.getSignature(sourceStack);
-			var sourceStackSize = sourceStack.getAmount();
-			if (eligibleSignatures.contains(signature)) {
-				var notMoved = destination.addItem(sourceStack);
-				if (notMoved.isEmpty()) {
-					source.clear(i);
-					deposits.totalItems += sourceStackSize;
-				} else {
-					var notMovedCount = notMoved.values().iterator().next().getAmount();
-					var movedCount = sourceStackSize - notMovedCount;
-					if (movedCount == 0) {
-						eligibleSignatures.remove(signature);
-					} else {
-						var newAmount = sourceStackSize - movedCount;
-						sourceStack.setAmount(newAmount);
-						deposits.totalItems += movedCount;
-					}
-				}
-			}
-		}
-
-		if (destination.firstEmpty() == -1) {
-			deposits.destinationFull = true;
-		}
-
-		return deposits;
+		return switch (feature) {
+			case SortInventory -> player.hasPermission("automaticinventory.sortinventory");
+			case SortChests -> player.hasPermission("automaticinventory.sortchests");
+			case RefillStacks -> player.hasPermission("automaticinventory.refillstacks");
+			case QuickDeposit -> player.hasPermission("automaticinventory.quickdeposit");
+			case DepositAll -> player.hasPermission("automaticinventory.depositall");
+		};
 	}
 }

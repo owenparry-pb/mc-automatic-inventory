@@ -30,19 +30,19 @@ public class QuickDepositCommand implements IAutomaticInventoryCommand {
 			} else {
 				Chat.sendMessage(player, Level.Success, Messages.QuickDepositDisabled);
 			}
+
+			return true;
 		} else if (optionName.startsWith("enable")) {
 			playerConfig.setQuickDepositEnabled(true);
 			Chat.sendMessage(player, Level.Success, Messages.QuickDepositEnabled);
+			return true;
 		} else if (optionName.startsWith("disable")) {
 			playerConfig.setQuickDepositEnabled(false);
 			Chat.sendMessage(player, Level.Success, Messages.QuickDepositDisabled);
+			return true;
 		} else {
 			Chat.sendMessage(player, Level.Error, Messages.QuickDepositHelp);
-			return true;
+			return false;
 		}
-
-		AutomaticInventory.instance.DeliverTutorialHyperlink(player);
-
-		return true;
 	}
 }

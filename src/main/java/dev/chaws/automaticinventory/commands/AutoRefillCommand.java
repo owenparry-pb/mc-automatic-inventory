@@ -29,19 +29,21 @@ public class AutoRefillCommand implements IAutomaticInventoryCommand {
 			} else {
 				Chat.sendMessage(player, Level.Success, Messages.AutoRefillDisabled);
 			}
+
+			return true;
 		} else if (optionName.startsWith("enable")) {
 			playerConfig.setAutoRefillEnabled(true);
 			Chat.sendMessage(player, Level.Success, Messages.AutoRefillEnabled);
+
+			return true;
 		} else if (optionName.startsWith("disable")) {
 			playerConfig.setAutoRefillEnabled(false);
 			Chat.sendMessage(player, Level.Success, Messages.AutoRefillDisabled);
+
+			return true;
 		} else {
 			Chat.sendMessage(player, Level.Error, Messages.AutoRefillHelp);
-			return true;
+			return false;
 		}
-
-		AutomaticInventory.instance.DeliverTutorialHyperlink(player);
-
-		return true;
 	}
 }
