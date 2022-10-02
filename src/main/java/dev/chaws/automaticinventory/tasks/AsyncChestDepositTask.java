@@ -59,7 +59,7 @@ public class AsyncChestDepositTask extends Thread {
 			var type = this.getType(current);
 			if (MaterialUtilities.isChest(type)) {
 				var overType = this.getType(new Vector(current.getBlockX(), current.getBlockY() + 1, current.getBlockZ()));
-				if (!BlockUtilities.preventsChestOpen(type, overType)) {
+				if (BlockUtilities.isOpenable(type, overType)) {
 					chestLocations.add(this.makeLocation(current));
 				}
 			}

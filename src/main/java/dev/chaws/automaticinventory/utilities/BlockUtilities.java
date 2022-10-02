@@ -29,13 +29,17 @@ public class BlockUtilities {
 	 * @param aboveBlockID the block above the ctest
 	 * @return whether the chest would not open
 	 */
-	public static boolean preventsChestOpen(Material container, Material aboveBlockID) {
+	public static boolean isOpenable(Material container, Material aboveBlockID) {
+		// This functions might make it into spigot at some point:
+		// https://hub.spigotmc.org/jira/browse/SPIGOT-5070
 		if (container == Material.BARREL) {
-			return false;
+			return true;
 		}
 
-		if (aboveBlockID == null) {
-			return false;
+		if (MaterialUtilities.isShulkerBox(container)) {
+			// Shulker boxes can face in more directions that UP. We should check the block
+			// based on the facing direction, but for now just return true to make this work.
+			return true;
 		}
 
 		return aboveBlockID.isOccluding();
