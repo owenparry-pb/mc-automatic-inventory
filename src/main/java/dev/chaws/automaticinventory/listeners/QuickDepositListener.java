@@ -65,7 +65,7 @@ public class QuickDepositListener implements Listener {
 
 			//make a note that quick deposit was used so that player will not be bothered with advertisement messages again.
 			var playerConfig = PlayerConfig.fromPlayer(player);
-			if (!playerConfig.isUsedQuickDeposit()) {
+			if (!playerConfig.hasUsedQuickDeposit()) {
 				playerConfig.setUsedQuickDeposit(true);
 			}
 		}

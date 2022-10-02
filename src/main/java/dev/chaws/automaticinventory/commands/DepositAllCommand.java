@@ -45,7 +45,9 @@ public class DepositAllCommand implements IAutomaticInventoryCommand {
 		thread.setPriority(Thread.MIN_PRIORITY);
 		thread.start();
 
-		playerConfig.setUsedDepositAll(true);
+		if (!playerConfig.hasUsedDepositAll()) {
+			playerConfig.setUsedDepositAll(true);
+		}
 		return true;
 	}
 }

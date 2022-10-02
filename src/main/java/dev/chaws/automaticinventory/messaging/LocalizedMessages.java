@@ -1,15 +1,13 @@
 package dev.chaws.automaticinventory.messaging;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-
 import dev.chaws.automaticinventory.AutomaticInventory;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class LocalizedMessages {
 	public static LocalizedMessages instance = new LocalizedMessages();

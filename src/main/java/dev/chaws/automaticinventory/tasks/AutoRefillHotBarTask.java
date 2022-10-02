@@ -10,10 +10,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 public class AutoRefillHotBarTask implements Runnable {
-	private Player player;
-	private PlayerInventory targetInventory;
-	private int slotToRefill;
-	private ItemStack stackToReplace;
+	private final Player player;
+	private final PlayerInventory targetInventory;
+	private final int slotToRefill;
+	private final ItemStack stackToReplace;
 
 	public AutoRefillHotBarTask(Player player, PlayerInventory targetInventory, int slotToRefill, ItemStack stackToReplace) {
 		this.player = player;
@@ -59,9 +59,9 @@ public class AutoRefillHotBarTask implements Runnable {
 		this.targetInventory.clear(bestMatchSlot);
 
 		var playerConfig = PlayerConfig.fromPlayer(player);
-		if (!playerConfig.isGotRestackInfo()) {
+		if (!playerConfig.hasReceivedRestackInfo()) {
 			Chat.sendMessage(player, Level.Info, Messages.AutoRefillEducation);
-			playerConfig.setGotRestackInfo(true);
+			playerConfig.setReceivedRestackInfo(true);
 		}
 	}
 }

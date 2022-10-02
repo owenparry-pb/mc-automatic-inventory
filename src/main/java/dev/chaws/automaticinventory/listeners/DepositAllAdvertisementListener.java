@@ -29,11 +29,11 @@ public class DepositAllAdvertisementListener implements Listener {
 
 		var playerConfig = PlayerConfig.fromPlayer(player);
 
-		if (player.getGameMode() != GameMode.CREATIVE && Math.random() < .1 && !playerConfig.isGotDepositAllInfo() && PlayerConfig.featureEnabled(Features.DepositAll, player)) {
+		if (player.getGameMode() != GameMode.CREATIVE && Math.random() < .1 && !playerConfig.isReceivedDepositAllInfo() && PlayerConfig.featureEnabled(Features.DepositAll, player)) {
 			var topInventory = event.getView().getTopInventory();
 			if (topInventory.getType() == InventoryType.CHEST) {
 				Chat.sendMessage(player, Level.Instr, Messages.DepositAllAdvertisement);
-				playerConfig.setGotDepositAllInfo(true);
+				playerConfig.setReceivedDepositAllInfo(true);
 			}
 		}
 	}

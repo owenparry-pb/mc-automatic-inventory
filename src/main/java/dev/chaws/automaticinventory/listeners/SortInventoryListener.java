@@ -84,9 +84,9 @@ public class SortInventoryListener implements Listener {
 
 		new InventorySorter(inventory, 9).run();
 
-		if (!playerConfig.isGotInventorySortInfo()) {
+		if (!playerConfig.hasReceivedInventorySortInfo()) {
 			Chat.sendMessage(player, Level.Info, Messages.InventorySortEducation);
-			playerConfig.setGotInventorySortInfo(true);
+			playerConfig.setReceivedInventorySortInfo(true);
 		}
 	}
 }

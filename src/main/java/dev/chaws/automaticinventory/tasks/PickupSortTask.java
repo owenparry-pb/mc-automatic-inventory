@@ -6,9 +6,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 public class PickupSortTask implements Runnable {
-	private Player player;
-	private PlayerConfig playerConfig;
-	private Inventory playerInventory;
+	private final Player player;
+	private final PlayerConfig playerConfig;
+	private final Inventory playerInventory;
 
 	public PickupSortTask(Player player, PlayerConfig playerConfig, Inventory playerInventory) {
 		this.player = player;

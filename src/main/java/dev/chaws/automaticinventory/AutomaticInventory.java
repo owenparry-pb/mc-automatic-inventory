@@ -11,6 +11,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.logging.Logger;
@@ -48,22 +49,25 @@ public class AutomaticInventory extends JavaPlugin {
 		}
 	}
 
-	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+	public boolean onCommand(
+		@NotNull CommandSender sender,
+		@NotNull Command cmd,
+		@NotNull String commandLabel,
+		@NotNull String[] args
+	) {
 		if (!(sender instanceof Player player)) {
 			return true;
 		}
 
 		var playerConfig = PlayerConfig.fromPlayer(player);
 
-		if (cmd.getName().equalsIgnoreCase("debugai") && player != null) {
-			return new DebugCommand().execute(player, playerConfig, args);
-		} else if (cmd.getName().equalsIgnoreCase("autosort") && player != null) {
+		if (cmd.getName().equalsIgnoreCase("autosort")) {
 			return new AutoSortCommand().execute(player, playerConfig, args);
-		} else if (cmd.getName().equalsIgnoreCase("depositall") && player != null) {
+		} else if (cmd.getName().equalsIgnoreCase("depositall")) {
 			return new DepositAllCommand().execute(player, playerConfig, args);
-		} else if (cmd.getName().equalsIgnoreCase("quickdeposit") && player != null) {
+		} else if (cmd.getName().equalsIgnoreCase("quickdeposit")) {
 			return new QuickDepositCommand().execute(player, playerConfig, args);
-		} else if (cmd.getName().equalsIgnoreCase("autorefill") && player != null) {
+		} else if (cmd.getName().equalsIgnoreCase("autorefill")) {
 			return new AutoRefillCommand().execute(player, playerConfig, args);
 		}
 

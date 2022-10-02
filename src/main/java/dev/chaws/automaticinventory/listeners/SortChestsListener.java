@@ -38,9 +38,9 @@ public class SortChestsListener implements Listener {
 			var sorter = new InventorySorter(topInventory, 0);
 			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(AutomaticInventory.instance, sorter, 1L);
 
-			if (!playerConfig.isGotChestSortInfo()) {
+			if (!playerConfig.hasReceivedChestSortInfo()) {
 				Chat.sendMessage(player, Level.Info, Messages.ChestSortEducation3);
-				playerConfig.setGotChestSortInfo(true);
+				playerConfig.setReceivedChestSortInfo(true);
 			}
 		}
 	}

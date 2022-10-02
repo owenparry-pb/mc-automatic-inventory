@@ -18,17 +18,17 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AsyncChestDepositTask extends Thread {
-	private World world;
-	private ChunkSnapshot[][] snapshots;
-	private int minY;
+	private final World world;
+	private final ChunkSnapshot[][] snapshots;
+	private final int minY;
 	private int maxY;
-	private int startX;
-	private int startY;
-	private int startZ;
-	private Player player;
-	private ChunkSnapshot smallestChunk;
+	private final int startX;
+	private final int startY;
+	private final int startZ;
+	private final Player player;
+	private final ChunkSnapshot smallestChunk;
 
-	private boolean[][][] seen;
+	private final boolean[][][] seen;
 
 	public AsyncChestDepositTask(World world, ChunkSnapshot[][] snapshots, int minY, int maxY, int startX, int startY, int startZ, Player player) {
 		this.world = world;
@@ -48,8 +48,8 @@ public class AsyncChestDepositTask extends Thread {
 
 	@Override
 	public void run() {
-		Queue<Location> chestLocations = new ConcurrentLinkedQueue<Location>();
-		Queue<Vector> leftToVisit = new ConcurrentLinkedQueue<Vector>();
+		Queue<Location> chestLocations = new ConcurrentLinkedQueue<>();
+		Queue<Vector> leftToVisit = new ConcurrentLinkedQueue<>();
 		var start = new Vector(this.startX, this.startY, this.startZ);
 		leftToVisit.add(start);
 		this.markSeen(start);
@@ -65,7 +65,7 @@ public class AsyncChestDepositTask extends Thread {
 			}
 
 			if (MaterialUtilities.isPassable(type)) {
-				var adjacents = new Vector[] {
+				var adjacentBlocks = new Vector[] {
 					new Vector(current.getBlockX() + 1, current.getBlockY(), current.getBlockZ()),
 					new Vector(current.getBlockX() - 1, current.getBlockY(), current.getBlockZ()),
 					new Vector(current.getBlockX(), current.getBlockY() + 1, current.getBlockZ()),
@@ -74,10 +74,10 @@ public class AsyncChestDepositTask extends Thread {
 					new Vector(current.getBlockX(), current.getBlockY(), current.getBlockZ() - 1),
 				};
 
-				for (var adjacent : adjacents) {
-					if (!this.alreadySeen(adjacent)) {
-						leftToVisit.add(adjacent);
-						this.markSeen(adjacent);
+				for (var adjacentBlock : adjacentBlocks) {
+					if (!this.alreadySeen(adjacentBlock)) {
+						leftToVisit.add(adjacentBlock);
+						this.markSeen(adjacentBlock);
 					}
 				}
 			}
@@ -99,9 +99,9 @@ public class AsyncChestDepositTask extends Thread {
         if (this.outOfBounds(location)) {
             return null;
         }
-		var chunkx = location.getBlockX() / 16;
-		var chunkz = location.getBlockZ() / 16;
-		var chunk = this.snapshots[chunkx][chunkz];
+		var chunkX = location.getBlockX() / 16;
+		var chunkZ = location.getBlockZ() / 16;
+		var chunk = this.snapshots[chunkX][chunkZ];
 		var x = location.getBlockX() % 16;
 		var z = location.getBlockZ() % 16;
 

@@ -63,11 +63,11 @@ Copy AutomaticInventory.jar into your server's plugins folder and then execute t
 **automaticinventory.depositall** controls access to the /DepositAll command.
 
 ## Commands
-**/AutoSort chests** toggles automatic chest sorting on or off.
+**/autosort chests** toggles automatic chest sorting on or off.
 
-**/AutoSort inventory** toggles automatic personal inventory sorting on or off.
+**/autosort inventory** toggles automatic personal inventory sorting on or off.
 
-**/DepositAll** dumps your backpack loot into nearby chests, assuming a chest with very similar items can be found.
+**/depositall** dumps your backpack loot into nearby chests, assuming a chest with very similar items can be found.
 
 **/quickdeposit toggle** toggles quick deposit on or off.
 

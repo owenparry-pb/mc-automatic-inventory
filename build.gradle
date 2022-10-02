@@ -32,11 +32,6 @@ spigot {
     apiVersion = project.property("spigotApiVersion")
     load = STARTUP
     commands {
-        debugai {
-            description 'Debug command for AutomaticInventory.'
-            permission 'automaticinventory.debug'
-            usage '/debugai'
-        }
         autosort {
             description 'Toggles auto-sorting options.'
             permission 'automaticinventory.sortchests'
@@ -62,7 +57,9 @@ spigot {
     permissions {
         'automaticinventory.admin.*' {
             description 'Grants all administrative privileges.'
-            children = ['automaticinventory.debugai': true]
+            children = [
+                    'automaticinventory.user.*': true
+            ]
         }
         'automaticinventory.user.*' {
             description 'Grants all user privileges.'
@@ -73,10 +70,6 @@ spigot {
                     'automaticinventory.quickdeposit': true,
                     'automaticinventory.depositall': true,
             ]
-        }
-        'automaticinventory.debugai' {
-            description 'Grants permission to use /DebugAI.'
-            defaults 'op'
         }
         'automaticinventory.sortinventory' {
             description 'Grants permission to auto-sort personal inventory.'
@@ -95,7 +88,7 @@ spigot {
             defaults 'true'
         }
         'automaticinventory.depositall' {
-            description 'Grants permission to use /DepositAll.'
+            description 'Grants permission to use /depositall.'
             defaults 'true'
         }
     }
