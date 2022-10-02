@@ -6,7 +6,6 @@ import java.io.StringWriter;
 import java.util.UUID;
 
 import dev.chaws.automaticinventory.AutomaticInventory;
-import dev.chaws.automaticinventory.messaging.LocalizedMessages;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -14,6 +13,9 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 public class PlayerConfig {
 	private final static String METADATA_TAG = "AI_PlayerData";
+	private static File playerConfigFolder;
+
+	private final File playerConfigFile;
 	private Thread loadingThread;
 	private Thread savingThread;
 	private String playerName;
@@ -25,6 +27,33 @@ public class PlayerConfig {
 	private boolean gotQuickDepositInfo = false;
 	private boolean gotDepositAllInfo = false;
 	private boolean usedDepositAll = false;
+
+	private PlayerConfig(Player player) {
+		this.playerName = player.getName();
+		this.playerID = player.getUniqueId();
+		this.playerConfigFile = new File(PlayerConfig.playerConfigFolder.getPath() + File.separator + this.playerID.toString());
+		this.loadingThread = new Thread(new DataLoader());
+		this.loadingThread.start();
+		player.setMetadata(METADATA_TAG, new FixedMetadataValue(AutomaticInventory.instance, this));
+	}
+
+	public static void initialize(File playerConfigFolder) {
+		PlayerConfig.playerConfigFolder = playerConfigFolder;
+	}
+
+	public static void initializePlayer(Player player) {
+		new PlayerConfig(player);
+	}
+
+	public static PlayerConfig fromPlayer(Player player) {
+		var data = player.getMetadata(METADATA_TAG);
+		if (data == null || data.isEmpty()) {
+			return new PlayerConfig(player);
+		} else {
+			var playerConfig = (PlayerConfig) (data.get(0).value());
+			return playerConfig;
+		}
+	}
 
 	public boolean isUsedQuickDeposit() {
 		return usedQuickDeposit;
@@ -73,28 +102,6 @@ public class PlayerConfig {
 
 	private UUID playerID;
 
-	public static void Preload(Player player) {
-		new PlayerConfig(player);
-	}
-
-	public static PlayerConfig FromPlayer(Player player) {
-		var data = player.getMetadata(METADATA_TAG);
-		if (data == null || data.isEmpty()) {
-			return new PlayerConfig(player);
-		} else {
-			var playerConfig = (PlayerConfig) (data.get(0).value());
-			return playerConfig;
-		}
-	}
-
-	private PlayerConfig(Player player) {
-		this.playerName = player.getName();
-		this.playerID = player.getUniqueId();
-		this.loadingThread = new Thread(new DataLoader());
-		this.loadingThread.start();
-		player.setMetadata(METADATA_TAG, new FixedMetadataValue(AutomaticInventory.instance, this));
-	}
-
 	public int firstEmptySlot = -1;
 
 	private boolean isDirty = false;
@@ -104,7 +111,7 @@ public class PlayerConfig {
 			return false;
 		}
 
-		var playerConfig = PlayerConfig.FromPlayer(player);
+		var playerConfig = PlayerConfig.fromPlayer(player);
 
 		return switch (feature) {
 			case SortInventory -> playerConfig.isSortInventory();
@@ -221,8 +228,8 @@ public class PlayerConfig {
 			config.set("Received Messages.Chest Inventory", this.gotChestSortInfo);
 			config.set("Received Messages.Restacker", this.gotRestackInfo);
 			config.set("Received Messages.Deposit All", this.gotDepositAllInfo);
-			var playerFile = new File(LocalizedMessages.playerConfigFolderPath + File.separator + this.playerID.toString());
-			config.save(playerFile);
+
+			config.save(this.playerConfigFile);
 		} catch (Exception e) {
 			var errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
@@ -234,50 +241,49 @@ public class PlayerConfig {
 	}
 
 	private void readDataFromFile() {
-		var playerFile = new File(LocalizedMessages.playerConfigFolderPath + File.separator + this.playerID.toString());
+		if (!this.playerConfigFile.exists()) {
+			return;
+		}
 
-		//if it exists as a file, read the file
-		if (playerFile.exists()) {
-			var needRetry = false;
-			var retriesRemaining = 5;
-			Exception latestException = null;
-			do {
-				try {
-					needRetry = false;
-					FileConfiguration config = YamlConfiguration.loadConfiguration(playerFile);
-					this.sortChests = config.getBoolean("Sort Chests", GlobalConfig.autosortEnabledByDefault);
-					this.sortInventory = config.getBoolean("Sort Personal Inventory", GlobalConfig.autosortEnabledByDefault);
-					this.quickDepositEnabled = config.getBoolean("Quick Deposit Enabled", GlobalConfig.quickDepositEnabledByDefault);
-					this.autoRefillEnabled = config.getBoolean("Auto Refill Enabled", GlobalConfig.autoRefillEnabledByDefault);
-					this.usedQuickDeposit = config.getBoolean("Used Quick Deposit", false);
-					this.gotChestSortInfo = config.getBoolean("Received Messages.Chest Inventory", false);
-					this.gotInventorySortInfo = config.getBoolean("Received Messages.Personal Inventory", false);
-					this.gotRestackInfo = config.getBoolean("Received Messages.Restacker", false);
-					this.gotDepositAllInfo = config.getBoolean("Received Messages.Deposit All", false);
-				}
-
-				//if there's any problem with the file's content, retry up to 5 times with 5 milliseconds between
-				catch (Exception e) {
-					latestException = e;
-					needRetry = true;
-					retriesRemaining--;
-				}
-
-				try {
-                    if (needRetry) {
-                        Thread.sleep(5);
-                    }
-				} catch (InterruptedException exception) {
-				}
-
-			} while (needRetry && retriesRemaining >= 0);
-
-			//if last attempt failed, log information about the problem
-			if (needRetry) {
-				var errors = new StringWriter();
-				latestException.printStackTrace(new PrintWriter(errors));
-				AutomaticInventory.log.info("Failed to load data for " + playerID + " " + errors.toString());
+		var needRetry = false;
+		var retriesRemaining = 5;
+		Exception latestException = null;
+		do {
+			try {
+				needRetry = false;
+				FileConfiguration config = YamlConfiguration.loadConfiguration(this.playerConfigFile);
+				this.sortChests = config.getBoolean("Sort Chests", GlobalConfig.autosortEnabledByDefault);
+				this.sortInventory = config.getBoolean("Sort Personal Inventory", GlobalConfig.autosortEnabledByDefault);
+				this.quickDepositEnabled = config.getBoolean("Quick Deposit Enabled", GlobalConfig.quickDepositEnabledByDefault);
+				this.autoRefillEnabled = config.getBoolean("Auto Refill Enabled", GlobalConfig.autoRefillEnabledByDefault);
+				this.usedQuickDeposit = config.getBoolean("Used Quick Deposit", false);
+				this.gotChestSortInfo = config.getBoolean("Received Messages.Chest Inventory", false);
+				this.gotInventorySortInfo = config.getBoolean("Received Messages.Personal Inventory", false);
+				this.gotRestackInfo = config.getBoolean("Received Messages.Restacker", false);
+				this.gotDepositAllInfo = config.getBoolean("Received Messages.Deposit All", false);
 			}
+
+			//if there's any problem with the file's content, retry up to 5 times with 5 milliseconds between
+			catch (Exception e) {
+				latestException = e;
+				needRetry = true;
+				retriesRemaining--;
+			}
+
+			try {
+				if (needRetry) {
+					Thread.sleep(5);
+				}
+			} catch (InterruptedException exception) {
+			}
+
+		} while (needRetry && retriesRemaining >= 0);
+
+		//if last attempt failed, log information about the problem
+		if (needRetry) {
+			var errors = new StringWriter();
+			latestException.printStackTrace(new PrintWriter(errors));
+			AutomaticInventory.log.info("Failed to load data for " + playerID + " " + errors.toString());
 		}
 	}
 

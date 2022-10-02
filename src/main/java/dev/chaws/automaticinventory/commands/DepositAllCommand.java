@@ -1,5 +1,6 @@
 package dev.chaws.automaticinventory.commands;
 
+import dev.chaws.automaticinventory.AutomaticInventory;
 import dev.chaws.automaticinventory.configuration.Features;
 import dev.chaws.automaticinventory.configuration.PlayerConfig;
 import dev.chaws.automaticinventory.messaging.Messages;
@@ -21,6 +22,11 @@ public class DepositAllCommand implements IAutomaticInventoryCommand {
 		var location = player.getLocation();
 		var centerChunk = location.getChunk();
 		var world = location.getWorld();
+		if (world == null) {
+			AutomaticInventory.log.warning("Could not execute deposit all command because the world could not be located.");
+			return true;
+		}
+
 		var snapshots = new ChunkSnapshot[3][3];
 		for (var x = -1; x <= 1; x++) {
 			for (var z = -1; z <= 1; z++) {

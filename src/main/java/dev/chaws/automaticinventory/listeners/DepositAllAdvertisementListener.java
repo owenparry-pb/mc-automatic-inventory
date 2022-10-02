@@ -27,7 +27,7 @@ public class DepositAllAdvertisementListener implements Listener {
 			return;
 		}
 
-		var playerConfig = PlayerConfig.FromPlayer(player);
+		var playerConfig = PlayerConfig.fromPlayer(player);
 
 		if (player.getGameMode() != GameMode.CREATIVE && Math.random() < .1 && !playerConfig.isGotDepositAllInfo() && PlayerConfig.featureEnabled(Features.DepositAll, player)) {
 			var topInventory = event.getView().getTopInventory();

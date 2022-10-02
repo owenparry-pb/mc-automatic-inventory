@@ -76,7 +76,12 @@ public class RefillStacksListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onCompostItem(PlayerInteractEvent event) {
-		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock().getType() == Material.COMPOSTER) {
+		var clickedBlock = event.getClickedBlock();
+		if (clickedBlock == null) {
+			return;
+		}
+
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && clickedBlock.getType() == Material.COMPOSTER) {
 			tryRefillStackInHand(event.getPlayer(), event.getHand());
 		}
 	}

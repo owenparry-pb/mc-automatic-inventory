@@ -11,12 +11,12 @@ public class ConfigurationListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	void onPlayerJoin(PlayerJoinEvent event) {
 		var player = event.getPlayer();
-		PlayerConfig.Preload(player);
+		PlayerConfig.initializePlayer(player);
 	}
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	void onPlayerQuit(PlayerQuitEvent event) {
 		var player = event.getPlayer();
-		PlayerConfig.FromPlayer(player).saveChanges();
+		PlayerConfig.fromPlayer(player).saveChanges();
 	}
 }

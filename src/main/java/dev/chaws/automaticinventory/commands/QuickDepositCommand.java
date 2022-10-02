@@ -1,6 +1,5 @@
 package dev.chaws.automaticinventory.commands;
 
-import dev.chaws.automaticinventory.*;
 import dev.chaws.automaticinventory.configuration.Features;
 import dev.chaws.automaticinventory.configuration.PlayerConfig;
 import dev.chaws.automaticinventory.messaging.Messages;

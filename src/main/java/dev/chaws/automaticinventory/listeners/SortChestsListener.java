@@ -18,12 +18,16 @@ public class SortChestsListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		var playerInventory = InventoryUtilities.getPlayerInventory(event.getView());
+		if (playerInventory == null) {
+			return;
+		}
+
 		var player = InventoryUtilities.getPlayer(playerInventory);
 		if (player == null) {
 			return;
 		}
 
-		var playerConfig = PlayerConfig.FromPlayer(player);
+		var playerConfig = PlayerConfig.fromPlayer(player);
 
 		if (!player.isSneaking() && PlayerConfig.featureEnabled(Features.SortChests, player)) {
 			var topInventory = event.getView().getTopInventory();

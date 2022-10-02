@@ -30,7 +30,7 @@ public class SortInventoryListener implements Listener {
 			return;
 		}
 
-		var playerConfig = PlayerConfig.FromPlayer(player);
+		var playerConfig = PlayerConfig.fromPlayer(player);
 		sortPlayerIfEnabled(player, playerConfig, playerInventory);
 
 	}
@@ -47,7 +47,7 @@ public class SortInventoryListener implements Listener {
 			return;
 		}
 
-		var playerConfig = PlayerConfig.FromPlayer(player);
+		var playerConfig = PlayerConfig.fromPlayer(player);
 
 		sortPlayerIfEnabled(player, playerConfig, playerInventory);
 	}
@@ -61,7 +61,7 @@ public class SortInventoryListener implements Listener {
 		if (!PlayerConfig.featureEnabled(Features.SortInventory, player)) {
 			return;
 		}
-		var playerConfig = PlayerConfig.FromPlayer(player);
+		var playerConfig = PlayerConfig.fromPlayer(player);
 		if (playerConfig.firstEmptySlot >= 0) {
 			return;
 		}

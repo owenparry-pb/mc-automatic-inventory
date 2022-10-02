@@ -1,6 +1,7 @@
 package dev.chaws.automaticinventory.utilities;
 
 import dev.chaws.automaticinventory.AutomaticInventory;
+import dev.chaws.automaticinventory.messaging.LocalizedMessages;
 import dev.chaws.automaticinventory.messaging.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -11,7 +12,7 @@ public class Chat {
 	}
 
 	public static void sendMessage(Player player, ChatColor color, Messages messageID, long delayInTicks, String... args) {
-		var message = AutomaticInventory.instance.localizedMessages.getMessage(messageID, args);
+		var message = LocalizedMessages.instance.getMessage(messageID, args);
 		sendMessage(player, color, message, delayInTicks);
 	}
 

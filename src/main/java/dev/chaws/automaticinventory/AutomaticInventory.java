@@ -1,42 +1,37 @@
 package dev.chaws.automaticinventory;
 
 import dev.chaws.automaticinventory.commands.*;
-import dev.chaws.automaticinventory.common.DepositRecord;
-import dev.chaws.automaticinventory.configuration.*;
+import dev.chaws.automaticinventory.configuration.Features;
+import dev.chaws.automaticinventory.configuration.GlobalConfig;
+import dev.chaws.automaticinventory.configuration.PlayerConfig;
 import dev.chaws.automaticinventory.listeners.*;
-import dev.chaws.automaticinventory.messaging.*;
-import dev.chaws.automaticinventory.utilities.ItemUtilities;
-import kr.entree.spigradle.annotations.PluginMain;
+import dev.chaws.automaticinventory.messaging.LocalizedMessages;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.*;
+import java.io.File;
 import java.util.logging.Logger;
 
-@PluginMain
 public class AutomaticInventory extends JavaPlugin {
-	//for convenience, a reference to the instance of this plugin
 	public static AutomaticInventory instance;
-
-	//for logging to the console and log file
 	public static Logger log;
-
-	//this handles data storage, like player and region data
-	public LocalizedMessages localizedMessages;
 
 	public void onEnable() {
 		log = getLogger();
 		instance = this;
-		GlobalConfig.Initialize(this.getDataFolder());
-		this.localizedMessages = new LocalizedMessages();
+
+		var dataFolder = this.initializeDataFolder();
+		GlobalConfig.initialize(dataFolder);
+		LocalizedMessages.initialize(dataFolder);
+
+		var playerConfigFolder = this.initializePlayerConfigFolder();
+		PlayerConfig.initialize(playerConfigFolder);
 
 		for (Player player : this.getServer().getOnlinePlayers()) {
-			PlayerConfig.Preload(player);
+			PlayerConfig.initializePlayer(player);
 		}
 
 		var pluginManager = this.getServer().getPluginManager();
@@ -54,12 +49,11 @@ public class AutomaticInventory extends JavaPlugin {
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		Player player = null;
-		PlayerConfig playerConfig = null;
-		if (sender instanceof Player) {
-			player = (Player) sender;
-			playerConfig = PlayerConfig.FromPlayer(player);
+		if (!(sender instanceof Player player)) {
+			return true;
 		}
+
+		var playerConfig = PlayerConfig.fromPlayer(player);
 
 		if (cmd.getName().equalsIgnoreCase("debugai") && player != null) {
 			return new DebugCommand().execute(player, playerConfig, args);
@@ -78,7 +72,7 @@ public class AutomaticInventory extends JavaPlugin {
 
 	public void onDisable() {
 		for (Player player : this.getServer().getOnlinePlayers()) {
-			var data = PlayerConfig.FromPlayer(player);
+			var data = PlayerConfig.fromPlayer(player);
 			data.saveChanges();
 			data.waitForSaveComplete();
 		}
@@ -94,5 +88,39 @@ public class AutomaticInventory extends JavaPlugin {
 			case QuickDeposit -> player.hasPermission("automaticinventory.quickdeposit");
 			case DepositAll -> player.hasPermission("automaticinventory.depositall");
 		};
+	}
+
+	private File initializeDataFolder() {
+		var dataFolder = this.getDataFolder();
+		if (!dataFolder.exists()) {
+			var oldDataFolder = new File(dataFolder.getPath() + File.separator + ".." + File.separator + "AutomaticInventory").getAbsoluteFile();
+			if (oldDataFolder.exists()) {
+				AutomaticInventory.log.info("Migrating config folder...");
+
+				if (oldDataFolder.renameTo(dataFolder)) {
+					AutomaticInventory.log.info("Migrated config folder successfully.");
+					return dataFolder;
+				} else {
+					AutomaticInventory.log.warning("Failed to migrate config folder!");
+				}
+			}
+			if (!dataFolder.mkdirs()) {
+				AutomaticInventory.log.warning("Could not create config directory.");
+			}
+		}
+
+		return dataFolder;
+	}
+
+	private File initializePlayerConfigFolder() {
+		var dataFolder = this.getDataFolder();
+		var playerConfigFolder = new File(dataFolder.getPath() + File.separator + "PlayerConfig");
+		if (!playerConfigFolder.exists()) {
+			if (!playerConfigFolder.mkdirs()) {
+				AutomaticInventory.log.warning("Could not create player config directory.");
+			}
+		}
+
+		return playerConfigFolder;
 	}
 }

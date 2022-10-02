@@ -58,7 +58,7 @@ public class AutoRefillHotBarTask implements Runnable {
 		this.targetInventory.setItem(this.slotToRefill, bestMatchStack);
 		this.targetInventory.clear(bestMatchSlot);
 
-		var playerConfig = PlayerConfig.FromPlayer(player);
+		var playerConfig = PlayerConfig.fromPlayer(player);
 		if (!playerConfig.isGotRestackInfo()) {
 			Chat.sendMessage(player, Level.Info, Messages.AutoRefillEducation);
 			playerConfig.setGotRestackInfo(true);

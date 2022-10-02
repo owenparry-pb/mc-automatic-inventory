@@ -37,13 +37,8 @@ public class GlobalConfig {
 		return this.excludeItemsContainingThisString.stream().anyMatch(name::contains);
 	}
 
-	public static void Initialize(File dataFolder) {
+	public static void initialize(File dataFolder) {
 		instance = new GlobalConfig();
-
-		//read configuration settings (note defaults)
-		if (!dataFolder.mkdirs()) {
-			AutomaticInventory.log.warning("Could not create configuration directory.");
-		}
 
 		var configFile = new File(dataFolder.getPath() + File.separatorChar + "config.yml");
 		FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
