@@ -7,11 +7,8 @@ import dev.chaws.automaticinventory.configuration.PlayerConfig;
 import dev.chaws.automaticinventory.listeners.*;
 import dev.chaws.automaticinventory.messaging.LocalizedMessages;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.logging.Logger;
@@ -43,35 +40,25 @@ public class AutomaticInventory extends JavaPlugin {
 		pluginManager.registerEvents(new SortChestsListener(), this);
 		pluginManager.registerEvents(new SortInventoryListener(), this);
 
+		this.registerCommand("autorefill", new AutoRefillCommand());
+		this.registerCommand("autosort", new AutoSortCommand());
+		this.registerCommand("depositall", new DepositAllCommand());
+		this.registerCommand("quickdeposit", new QuickDepositCommand());
+
 		try {
 			new Metrics(this, 3547);
 		} catch (Throwable ignored) {
 		}
 	}
 
-	public boolean onCommand(
-		@NotNull CommandSender sender,
-		@NotNull Command cmd,
-		@NotNull String commandLabel,
-		@NotNull String[] args
-	) {
-		if (!(sender instanceof Player player)) {
-			return true;
+	private <T extends AutomaticInventoryCommand> void registerCommand(String commandName, T command) {
+		var pluginCommand = this.getCommand(commandName);
+		if (pluginCommand == null) {
+			return;
 		}
 
-		var playerConfig = PlayerConfig.fromPlayer(player);
-
-		if (cmd.getName().equalsIgnoreCase("autosort")) {
-			return new AutoSortCommand().execute(player, playerConfig, args);
-		} else if (cmd.getName().equalsIgnoreCase("depositall")) {
-			return new DepositAllCommand().execute(player, playerConfig, args);
-		} else if (cmd.getName().equalsIgnoreCase("quickdeposit")) {
-			return new QuickDepositCommand().execute(player, playerConfig, args);
-		} else if (cmd.getName().equalsIgnoreCase("autorefill")) {
-			return new AutoRefillCommand().execute(player, playerConfig, args);
-		}
-
-		return false;
+		pluginCommand.setExecutor(command);
+		pluginCommand.setTabCompleter(command);
 	}
 
 	public void onDisable() {

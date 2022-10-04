@@ -8,10 +8,20 @@ import dev.chaws.automaticinventory.tasks.AsyncChestDepositTask;
 import dev.chaws.automaticinventory.utilities.Chat;
 import dev.chaws.automaticinventory.utilities.Level;
 import org.bukkit.ChunkSnapshot;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
-public class DepositAllCommand implements IAutomaticInventoryCommand {
-	public boolean execute(Player player, PlayerConfig playerConfig, String[] args) {
+public class DepositAllCommand extends AutomaticInventoryCommand {
+	@Override
+	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+		if (!(sender instanceof Player player)) {
+			return true;
+		}
+
+		var playerConfig = PlayerConfig.fromPlayer(player);
+
 		//ensure player has feature enabled
 		if (!PlayerConfig.featureEnabled(Features.DepositAll, player)) {
 			Chat.sendMessage(player, Level.Error, Messages.NoPermissionForFeature);
@@ -48,6 +58,7 @@ public class DepositAllCommand implements IAutomaticInventoryCommand {
 		if (!playerConfig.hasUsedDepositAll()) {
 			playerConfig.setUsedDepositAll(true);
 		}
+
 		return true;
 	}
 }
