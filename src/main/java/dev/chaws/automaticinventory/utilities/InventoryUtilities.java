@@ -93,7 +93,7 @@ public class InventoryUtilities {
 				continue;
 			}
 
-			if (GlobalConfig.instance.config_noAutoDeposit.contains(sourceStack.getType())) {
+			if (GlobalConfig.instance.autoDepositExcludedItems.contains(sourceStack.getType())) {
 				continue;
 			}
 

@@ -19,8 +19,8 @@ public class GlobalConfig {
 	public static boolean quickDepositEnabledByDefault = true;
 	public static boolean autoRefillEnabledByDefault = true;
 
-	public Set<Material> config_noAutoRefill = new HashSet<>();
-	public Set<Material> config_noAutoDeposit = new HashSet<>();
+	public Set<Material> autoRefillExcludedItems = new HashSet<>();
+	public Set<Material> autoDepositExcludedItems = new HashSet<>();
 	public List<String> excludeItemsContainingThisString;
 
 	public boolean isItemExcludedViaName(ItemStack itemStack) {
@@ -44,41 +44,41 @@ public class GlobalConfig {
 		FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 		FileConfiguration outConfig = new YamlConfiguration();
 
-		var noAutoRefillIDs_string = config.getStringList("Auto Refill.Excluded Items");
-		if (noAutoRefillIDs_string.size() == 0) {
-			noAutoRefillIDs_string.add("AIR");
-			noAutoRefillIDs_string.add("POTION");
+		var autoRefillExcludedItemNames = config.getStringList("Auto Refill.Excluded Items");
+		if (autoRefillExcludedItemNames.size() == 0) {
+			autoRefillExcludedItemNames.add("AIR");
+			autoRefillExcludedItemNames.add("POTION");
 		}
 
-		for (var idString : noAutoRefillIDs_string) {
-			var material = Material.matchMaterial(idString.toUpperCase());
+		for (var itemName : autoRefillExcludedItemNames) {
+			var material = Material.matchMaterial(itemName.toUpperCase());
 			if (material == null) {
-				AutomaticInventory.log.warning(idString + " is not a valid material");
+				AutomaticInventory.log.warning(itemName + " is not a valid material");
 			} else {
-				instance.config_noAutoRefill.add(material);
+				instance.autoRefillExcludedItems.add(material);
 			}
 		}
 
-		outConfig.set("Auto Refill.Excluded Items", noAutoRefillIDs_string);
+		outConfig.set("Auto Refill.Excluded Items", autoRefillExcludedItemNames);
 
-		var noAutoDepositIDs_string = config.getStringList("Auto Deposit.Excluded Items");
-		if (noAutoDepositIDs_string.size() == 0) {
-			noAutoDepositIDs_string.add("AIR");
-			noAutoDepositIDs_string.add("ARROW");
-			noAutoDepositIDs_string.add("SPECTRAL_ARROW");
-			noAutoDepositIDs_string.add("TIPPED_ARROW");
+		var autoDepositExcludedItemNames = config.getStringList("Auto Deposit.Excluded Items");
+		if (autoDepositExcludedItemNames.size() == 0) {
+			autoDepositExcludedItemNames.add("AIR");
+			autoDepositExcludedItemNames.add("ARROW");
+			autoDepositExcludedItemNames.add("SPECTRAL_ARROW");
+			autoDepositExcludedItemNames.add("TIPPED_ARROW");
 		}
 
-		for (var idString : noAutoDepositIDs_string) {
-			var material = Material.matchMaterial(idString.toUpperCase());
+		for (var itemName : autoDepositExcludedItemNames) {
+			var material = Material.matchMaterial(itemName.toUpperCase());
 			if (material == null) {
-				AutomaticInventory.log.warning(idString + " is not a valid material");
+				AutomaticInventory.log.warning(itemName + " is not a valid material");
 			} else {
-				instance.config_noAutoDeposit.add(material);
+				instance.autoDepositExcludedItems.add(material);
 			}
 		}
 
-		outConfig.set("Auto Deposit.Excluded Items", noAutoDepositIDs_string);
+		outConfig.set("Auto Deposit.Excluded Items", autoDepositExcludedItemNames);
 
 		autosortEnabledByDefault = config.getBoolean("autosortEnabledByDefault", true);
 		outConfig.set("autosortEnabledByDefault", autosortEnabledByDefault);

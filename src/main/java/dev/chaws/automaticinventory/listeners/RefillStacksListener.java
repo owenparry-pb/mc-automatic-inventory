@@ -107,7 +107,7 @@ public class RefillStacksListener implements Listener {
 			return;
 		}
 
-		if (GlobalConfig.instance.config_noAutoRefill.contains(stack.getType())) {
+		if (GlobalConfig.instance.autoRefillExcludedItems.contains(stack.getType())) {
 			return;
 		}
 		if (stack.getAmount() == 1) {

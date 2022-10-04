@@ -19,26 +19,26 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AsyncChestDepositTask extends Thread {
 	private final World world;
-	private final ChunkSnapshot[][] snapshots;
+	private final ChunkSnapshot[][] chunks;
 	private final int minY;
 	private int maxY;
 	private final int startX;
 	private final int startY;
 	private final int startZ;
 	private final Player player;
-	private final ChunkSnapshot smallestChunk;
+	private final ChunkSnapshot firstChunk;
 
 	private final boolean[][][] seen;
 
 	public AsyncChestDepositTask(World world, ChunkSnapshot[][] snapshots, int minY, int maxY, int startX, int startY, int startZ, Player player) {
 		this.world = world;
-		this.snapshots = snapshots;
+		this.chunks = snapshots;
 		this.minY = minY;
 		this.maxY = maxY;
-		this.smallestChunk = this.snapshots[0][0];
-		this.startX = startX - this.smallestChunk.getX() * 16;
+		this.firstChunk = this.chunks[0][0];
+		this.startX = startX - this.firstChunk.getX() * 16;
 		this.startY = startY;
-		this.startZ = startZ - this.smallestChunk.getZ() * 16;
+		this.startZ = startZ - this.firstChunk.getZ() * 16;
         if (this.maxY >= world.getMaxHeight()) {
             this.maxY = world.getMaxHeight() - 1;
         }
@@ -90,9 +90,9 @@ public class AsyncChestDepositTask extends Thread {
 	private Location makeLocation(Vector location) {
 		return new Location(
 			this.world,
-			this.smallestChunk.getX() * 16 + location.getBlockX(),
+			this.firstChunk.getX() * 16 + location.getBlockX(),
 			location.getBlockY(),
-			this.smallestChunk.getZ() * 16 + location.getBlockZ());
+			this.firstChunk.getZ() * 16 + location.getBlockZ());
 	}
 
 	private Material getType(Vector location) {
@@ -101,7 +101,7 @@ public class AsyncChestDepositTask extends Thread {
         }
 		var chunkX = location.getBlockX() / 16;
 		var chunkZ = location.getBlockZ() / 16;
-		var chunk = this.snapshots[chunkX][chunkZ];
+		var chunk = this.chunks[chunkX][chunkZ];
 		var x = location.getBlockX() % 16;
 		var z = location.getBlockZ() % 16;
 

@@ -21,7 +21,7 @@ public class LocalizedMessages {
 		var messageIDs = Messages.values();
 		instance.messages = new String[messageIDs.length];
 
-		var defaults = new HashMap<String, CustomizableMessage>();
+		var defaults = new HashMap<String, LocalizedMessage>();
 
 		//initialize defaults
 		//this.addDefault(defaults, Messages.NoManagedWorld, "The PopulationDensity plugin has not been properly configured.  Please update your configuration.yml to specify a world to manage.", null);
@@ -60,7 +60,7 @@ public class LocalizedMessages {
 			//if default is missing, log an error and use some fake data for now so that the plugin can run
 			if (messageData == null) {
 				AutomaticInventory.log.info("Missing message for " + messageID.name() + ".  Please contact the developer.");
-				messageData = new CustomizableMessage(messageID, "Missing message!  ID: " + messageID.name() + ".  Please contact a server admin.", null);
+				messageData = new LocalizedMessage(messageID, "Missing message!  ID: " + messageID.name() + ".  Please contact a server admin.", null);
 			}
 
 			//read the message from the file, use default if necessary
@@ -91,8 +91,8 @@ public class LocalizedMessages {
 		defaults.clear();
 	}
 
-	private void addDefault(HashMap<String, CustomizableMessage> defaults, Messages id, String text) {
-		var message = new CustomizableMessage(id, text, null);
+	private void addDefault(HashMap<String, LocalizedMessage> defaults, Messages id, String text) {
+		var message = new LocalizedMessage(id, text, null);
 		defaults.put(id.name(), message);
 	}
 
@@ -105,5 +105,17 @@ public class LocalizedMessages {
 		}
 
 		return message;
+	}
+
+	private static class LocalizedMessage {
+		public Messages id;
+		public String text;
+		public String notes;
+
+		public LocalizedMessage(Messages id, String text, String notes) {
+			this.id = id;
+			this.text = text;
+			this.notes = notes;
+		}
 	}
 }
