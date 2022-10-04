@@ -7,6 +7,32 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class Chat {
+	public static void broadcastMessage(ChatColor color, Messages messageID, String... args) {
+		broadcastMessage(color, messageID, 0, args);
+	}
+
+	public static void broadcastMessage(ChatColor color, Messages messageID, long delayInTicks, String... args) {
+		var message = LocalizedMessages.instance.getMessage(messageID, args);
+		broadcastMessage(color, message, delayInTicks);
+	}
+
+	public static void broadcastMessage(ChatColor color, String message) {
+		if (message == null || message.length() == 0) {
+			return;
+		}
+
+		broadcastMessage(color, message, 0);
+	}
+
+	public static void broadcastMessage(ChatColor color, String message, long delayInTicks) {
+		var task = new BroadcastMessageTask(color, message);
+		if (delayInTicks > 0) {
+			AutomaticInventory.instance.getServer().getScheduler().runTaskLater(AutomaticInventory.instance, task, delayInTicks);
+		} else {
+			task.run();
+		}
+	}
+
 	public static void sendMessage(Player player, ChatColor color, Messages messageID, String... args) {
 		sendMessage(player, color, messageID, 0, args);
 	}
@@ -21,11 +47,7 @@ public class Chat {
 			return;
 		}
 
-		if (player == null) {
-			AutomaticInventory.log.info(color + message);
-		} else {
-			player.sendMessage(color + message);
-		}
+		sendMessage(player, color, message, 0);
 	}
 
 	public static void sendMessage(Player player, ChatColor color, String message, long delayInTicks) {
@@ -55,9 +77,23 @@ class SendPlayerMessageTask implements Runnable {
 	public void run() {
 		if (player == null) {
 			AutomaticInventory.log.info(color + message);
-			return;
+		} else {
+			player.sendMessage(color + message);
 		}
+	}
+}
 
-		Chat.sendMessage(this.player, this.color, this.message);
+class BroadcastMessageTask implements Runnable {
+	private final ChatColor color;
+	private final String message;
+
+	public BroadcastMessageTask(ChatColor color, String message) {
+		this.color = color;
+		this.message = message;
+	}
+
+	@Override
+	public void run() {
+		AutomaticInventory.instance.getServer().broadcastMessage(color + message);
 	}
 }

@@ -8,14 +8,25 @@ public class ItemUtilities {
 	public static String getSignature(ItemStack stack) {
 		var signature = stack.getType().name();
 		if (stack.getMaxStackSize() > 1) {
-			signature += "." + String.valueOf(stack.getData().getData());
+			var data = stack.getData();
+			if (data != null) {
+				// getData will not actually be deprecated according to the spigot forums
+				//noinspection deprecation
+				signature += "." + String.valueOf(data.getData());
+			}
+		}
+
+		var meta = stack.getItemMeta();
+		if (meta != null && meta.hasDisplayName()) {
+			// Append the name of the item is there is a custom name given to it
+			signature += "." + meta.getDisplayName();
 		}
 
 		//differentiate potion types. Original credit to pugabyte: https://github.com/Pugabyte/AutomaticInventory/commit/01bbdbfa0ea1bc7dc397fc8a8ff625f3f22e1ed6
 		//Modified to use PotionType instead of PotionEffectType in signature
 		if (stack.getType().toString().toLowerCase().contains("potion")) {
 			var potionData = ((PotionMeta) stack.getItemMeta()).getBasePotionData();
-			signature += "." + potionData.getType().toString();
+			signature += "." + potionData.getType();
 			if (potionData.isExtended()) {
 				signature += ".extended";
 			}
@@ -29,9 +40,11 @@ public class ItemUtilities {
 
 	public static boolean itemsAreSimilar(ItemStack a, ItemStack b) {
 		if (a.getType() == b.getType()) {
-			if (a.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS) || a.containsEnchantment(Enchantment.SILK_TOUCH) || a.containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) {
-				return false;
-			}
+			return
+				!a.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS) &&
+				!a.containsEnchantment(Enchantment.SILK_TOUCH) &&
+				!a.containsEnchantment(Enchantment.LOOT_BONUS_MOBS) &&
+				!a.containsEnchantment(Enchantment.ARROW_INFINITE);
 
 			//a will _not_ have itemMeta if it is a vanilla tool with no damage.
 //            if(a.hasItemMeta() != b.hasItemMeta()) return false;
@@ -51,8 +64,6 @@ public class ItemUtilities {
 //                    return meta1.getDisplayName().equals(meta2.getDisplayName());
 //                }
 //            }
-
-			return true;
 		}
 
 		return false;
