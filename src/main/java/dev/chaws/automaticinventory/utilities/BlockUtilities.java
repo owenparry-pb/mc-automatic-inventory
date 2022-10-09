@@ -1,5 +1,6 @@
 package dev.chaws.automaticinventory.utilities;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
@@ -26,10 +27,10 @@ public class BlockUtilities {
 	/**
 	 * Function to check if a chest would open based only on its block above
 	 *
-	 * @param aboveBlockID the block above the ctest
+	 * @param aboveBlock the block above the ctest
 	 * @return whether the chest would not open
 	 */
-	public static boolean isOpenable(Material container, Material aboveBlockID) {
+	public static boolean isOpenable(Material container, Material aboveBlock) {
 		// This functions might make it into spigot at some point:
 		// https://hub.spigotmc.org/jira/browse/SPIGOT-5070
 		if (container == Material.BARREL) {
@@ -42,6 +43,6 @@ public class BlockUtilities {
 			return true;
 		}
 
-		return aboveBlockID.isOccluding();
+		return !aboveBlock.isOccluding();
 	}
 }
