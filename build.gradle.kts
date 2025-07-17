@@ -6,11 +6,11 @@ import java.net.URI
 plugins {
     `java-library`
     // Check for new versions at https://plugins.gradle.org/plugin/io.papermc.paperweight.userdev
-    id("io.papermc.paperweight.userdev") version "1.7.1"
+    id("io.papermc.paperweight.userdev") version "1.7.7"
     // Adds runServer and runMojangMappedServer tasks for testing
-    id("xyz.jpenilla.run-paper") version "2.3.0"
+    id("xyz.jpenilla.run-paper") version "2.3.1"
     // Generates plugin.yml based on the Gradle config
-    id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.1.1"
+    id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.3.0"
 //    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
@@ -42,12 +42,12 @@ java {
 dependencies {
     paperweight.paperDevBundle("1.21-R0.1-SNAPSHOT")
     // paperweight.foliaDevBundle("1.21-R0.1-SNAPSHOT")
-    // paperweight.devBundle("com.example.paperfork", "1.21-R0.1-SNAPSHOT")
-    implementation("org.bstats:bstats-bukkit:3.0.2")
+    // paperweight.devBundle("com.example.paperfork", "1.21.8-R0.1-SNAPSHOT")
+    implementation("org.bstats:bstats-bukkit:3.1.0")
 
     // Add ASM dependency to support Java 21 class files
-    implementation("org.ow2.asm:asm:9.7")
-    implementation("org.ow2.asm:asm-commons:9.7")
+    implementation("org.ow2.asm:asm:9.8")
+    implementation("org.ow2.asm:asm-commons:9.8")
 }
 
 // Option 1)
